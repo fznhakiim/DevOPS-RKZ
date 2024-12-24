@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - RKZ Restaurant</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/style/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+			font-family: 'Poppins', sans-serif;
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+        }       
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar2 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 60px;
+        }
+
+        .navbar2-logo img {
+            max-height: 100%;
+            width: auto;
+        }
+
+        .navbar2-menu {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar2-menu li {
+            margin-left: 20px;
+        }
+
+        .navbar2-menu li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+
+        .navbar2-menu li a:hover {
+            color: #ea7c7c;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        /* Additional styles */
+        #mainNavbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        #mainNavbar ul li {
+            margin: 0 10px;
+        }
+
+        #mainNavbar ul li a {
+            text-decoration: none;
+        }
+
+        #mainNavbar ul li button {
+            background-color: white; 
+            color: black; 
+            border: none;
+            border-radius: 5px; 
+            padding: 10px 20px; 
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+        }
+
+        #mainNavbar ul li button:hover {
+            background-color: #e65e47; /* Slightly darker shade for hover effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+        }
+
+        #watermark {
+            background-color: #d04e4e;
+        }
+
+
+        .social-media {
+            margin-top: 20px;
+        }
+
+        .social-media h3 {
+            color: #007BFF; /* Social media heading color */
+            margin-bottom: 10px;
+        }
+
+        .social-media ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .social-media ul li {
+            margin: 0 10px;
+        }
+
+        .social-media ul li a {
+            color: #555; /* Social media icon color */
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        .social-media ul li a:hover {
+            color: #007BFF; /* Social media icon color on hover */
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f18e8e;
+        }
+
+        /* Additional styles */
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .about-us {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 10px;
+        }
+
+        .content {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .content h1 {
+            color: #007BFF; /* Heading color */
+        }
+
+        .content h2 {
+            color: #555; /* Subheading color */
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+    </style>
+	<script src="src/script/jquery.js"></script>
+	<script src="src/script/script.js"></script>
+</head>
+<body>
+ <!--navigation bar-->
+    <nav id="loginNavbar">
+        <ul id="navlogin">
+            <li>
+                <a href="cart.html">Cart</a>
+            </li>
+            <li>
+                <a href="aboutUs.html">About</a>
+            </li>
+            <li>
+                <a href="contactUsPage.html">Contact Us</a>
+            </li>
+            <li>
+                <button id="loginButton">Log In</button>
+				<span id="greeting"></span>
+				<button id="logoutButton">Log Out</button>
+            </li>
+        </ul>
+    </nav>
+    <nav id="mainNavbar">
+        <ul>
+            <li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+            <li><a href="homePage.html"><button>Home</button></a></li>
+            <li><a href="menuPage.html"><button>Menu</button></a></li>
+            <li><a href="reservationPage.html"><button>Reservation</button></a></li>
+            <li><a href="outletPage.html"><button>Outlet</button></a></li>
+        </ul>
+    </nav>
+    <!-- navigation bar end -->
+    <!--modal login-->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+            <hr style="width: 90%">
+            <p style="text-align:center;">RKZ Restaurant</p>
+            <center>
+                <form>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <button type="submit">LOGIN</button>
+                    <p>Don't have an account?</p>
+                    <p>
+                        <a href="registerPage.html">Register now!</a>
+                    </p>
+                </form>
+            </center>
+        </div>
+    </div>
+    <!--modal login end-->
+    <main>
+        <section class="about-us">
+            <div class="content">
+                <h1>ABOUT US</h1>
+                <h2>RKZ Restaurant has become a favorite spot for foodies looking for authentic flavors and a warm atmosphere</h2>
+                <p>Our menu includes a variety of signature dishes lovingly prepared by our experienced chefs. From appetizing appetizers to sweet desserts</p>
+                <div class="social-media">
+                    <h3>Social Media</h3>
+                    <ul>
+                        <li><a href="https://www.facebook.com"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="https://www.instagram.com"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a></li>    
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="links">
+            <div class="social">
+            <h3>LINKS</h3>
+            <ul>
+                <li><a href="homePage.html">Home</a></li>
+                <li><a href="menuPage.html">Menu</a></li>
+                <li><a href="contactUsPage.html">Contact Us</a></li>
+                <li><a href="aboutUs.html">About Us</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h3>FOLLOW US</h3>
+            <div class="social-icons">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="contact">
+            <h3>CONTACT</h3>
+            <ul>
+                <li>+62 821-5500-5925</li>
+                <li><a href="contactUsPage.html">info@RKZrestaurant.com</a></li>
+            </ul>
+        </div>
+        <br><br>
+        <div class="copyright" align="center">
+            <h3>© 2023 by RKZ Restaurant. All rights reserved.</h3>
+        </div>
+    </footer>
+</body>
+</html>

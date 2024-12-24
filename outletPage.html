@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RKZ Restaurant - Outlet</title>
+    <link rel="stylesheet" href="src/style/style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar2 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 60px;
+        }
+
+        .navbar2-logo img {
+            max-height: 100%;
+            width: auto;
+        }
+
+        .navbar2-menu {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar2-menu li {
+            margin-left: 20px;
+        }
+
+        .navbar2-menu li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+
+        .navbar2-menu li a:hover {
+            color: #007BFF;
+        }
+
+        .outlet-section {
+            padding: 20px;
+        }
+
+        .outlet-section h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .outlet-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .outlet-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px;
+            width: calc(33% - 40px); /* Adjust width based on your layout */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .outlet-item h2 {
+            margin-top: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        /* Styling for Main Navigation Buttons */
+        #mainNavbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            margin: 20px 0;
+            background-color: #fff; /* White background for navigation bar */
+        }
+
+        #mainNavbar ul li {
+            margin: 0 10px;
+        }
+
+        #mainNavbar ul li a {
+            text-decoration: none;
+        }
+
+        #mainNavbar ul li button {
+            background-color: white; /* Light, soft color */
+            color: black; /* White text */
+            border: none;
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 20px; /* Comfortable padding */
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+        }
+
+        #mainNavbar ul li button:hover {
+            background-color: #e65e47; /* Slightly darker shade for hover effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+        }
+
+        /* Responsive iFrame Styling */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+        }
+
+        .responsive-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        #watermark{
+            background-color: #F79D65;
+        }
+    </style>
+	<script src="src/script/jquery.js"></script>
+	<script src="src/script/script.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"><!--footer social media font-->
+</head>
+<body>
+ <!--navigation bar-->
+    <nav id="loginNavbar">
+        <ul id="navlogin">
+            <li>
+                <a href="cart.html">Cart</a>
+            </li>
+            <li>
+                <a href="aboutUs.html">About</a>
+            </li>
+            <li>
+                <a href="contactUsPage.html">Contact Us</a>
+            </li>
+            <li>
+                <button id="loginButton">Log In</button>
+				<span id="greeting"></span>
+				<button id="logoutButton">Log Out</button>
+            </li>
+        </ul>
+    </nav>
+    <nav id="mainNavbar">
+        <ul>
+            <li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+            <li><a href="homePage.html"><button>Home</button></a></li>
+            <li><a href="menuPage.html"><button>Menu</button></a></li>
+            <li><a href="reservationPage.html"><button>Reservation</button></a></li>
+            <li><a href="outletPage.html"><button>Outlet</button></a></li>
+        </ul>
+    </nav>
+    <!-- navigation bar end -->
+    <!--modal login-->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+            <hr style="width: 90%">
+            <p style="text-align:center;">RKZ Restaurant</p>
+            <center>
+                <form>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <button type="submit">LOGIN</button>
+                    <p>Don't have an account?</p>
+                    <p>
+                        <a href="registerPage.html">Register now!</a>
+                    </p>
+                </form>
+            </center>
+        </div>
+    </div>
+    <!--modal login end-->
+    <main>
+        <section class="outlet-section">
+            <center>
+                <div class="iframe-container">
+                    <iframe class="responsive-iframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.244492495426!2d106.82150137503888!3d-6.362395093627658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69ec192c30aa47%3A0x72f29bad0571e98c!2sFakultas%20Teknik%20Universitas%20Indonesia!5e0!3m2!1sid!2sid!4v1718928622916!5m2!1sid!2sid" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </center>
+            <br>
+            <h1>OUR OUTLETS</h1>
+            <div class="outlet-list">
+                <div class="outlet-item">
+                    <h2>Outlet 1</h2>
+                    <p>Address: 123 Main Street, Depok, Indonesia</p>
+                    <p>Phone: +62 823-456-6190</p>
+                    <p>Hours: 8:00 AM - 10:00 PM</p>
+                </div>
+                <div class="outlet-item">
+                    <h2>Outlet 2</h2>
+                    <p>Address: 456 Another St, Depok, Indonesia</p>
+                    <p>Phone: +62 823-456-2190</p>
+                    <p>Hours: 8:00 AM - 10:00 PM</p>
+                </div>
+                <div class="outlet-item">
+                    <h2>Outlet 3</h2>
+                    <p>Address: 139 Main Street, Depok, Indonesia</p>
+                    <p>Phone: +62 823-456-5490</p>
+                    <p>Hours: 8:00 AM - 10:00 PM</p>
+                </div>
+                <div class="outlet-item">
+                    <h2>Outlet 4</h2>
+                    <p>Address: 178 Main Street, Depok, Indonesia</p>
+                    <p>Phone: +62 823-456-7690</p>
+                    <p>Hours: 8:00 AM - 10:00 PM</p>
+                </div>
+                <div class="outlet-item">
+                    <h2>Outlet 5</h2>
+                    <p>Address: 101 Main Street, Depok, Indonesia</p>
+                    <p>Phone: +62 823-456-7890</p>
+                    <p>Hours: 8:00 AM - 10:00 PM</p>
+                </div>
+                <div class="outlet-item">
+                    <h2>Outlet 6</h2>
+                    <p>Address: 189 Main Street, Depok, Indonesia</p>
+                    <p>Phone: +62 823-456-2190</p>
+                    <p>Hours: 10:00 AM - 10:00 PM</p>
+                </div>
+                <!-- Add more outlets as needed -->
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="links">
+            <div class="social">
+            <h3>LINKS</h3>
+            <ul>
+                <li><a href="homePage.html">Home</a></li>
+                <li><a href="menuPage.html">Menu</a></li>
+                <li><a href="contactUsPage.html">Contact Us</a></li>
+                <li><a href="aboutUs.html">About Us</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h3>FOLLOW US</h3>
+            <div class="social-icons">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="contact">
+            <h3>CONTACT</h3>
+            <ul>
+                <li>+62 821-5500-5925</li>
+                <li><a href="contactUsPage.html">info@RKZrestaurant.com</a></li>
+            </ul>
+        </div>
+        <br><br>
+        <div class="copyright" align="center">
+            <h3>© 2023 by RKZ Restaurant. All rights reserved.</h3>
+        </div>
+    </footer>
+</body>
+</html>

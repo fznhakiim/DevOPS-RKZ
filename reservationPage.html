@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RKZ Restaurant - Reservation</title>
+    <link rel="stylesheet" href="src/style/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"><!--footer social media font-->
+    <style>
+        /* Existing styles */
+        @import url('https://fonts.googleapis.com/css?family=Poppins');
+        *
+        {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+			margin-bottom: 40px;
+        }
+        .reservation-form {
+            width: 80%;
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .reservation-form form {
+            text-align: left;
+        }
+        .reservation-form form label {
+            display: block;
+            margin-top: 10px;
+        }
+        .reservation-form form input,
+        .reservation-form form select,
+        .reservation-form form button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .reservation-form form button {
+            margin-top: 20px;
+            background-color: #fc7560;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .reservation-form form button:hover {
+            background-color: #fa7c70;
+        }
+        /* Pop-up overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .popup {
+            position: fixed;
+            background-color: white;
+            width: 300px;
+            padding: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .popup button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+			margin: 10px 10px;
+			border-radius: 5px;
+        }
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+		.error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+	<script src="src/script/jquery.js"></script>
+	<script src="src/script/script.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Get elements
+            const $dateInput = $('#dob');
+            const $timeInput = $('#time');
+            const $errorMessage = $('<p class="error-message"></p>').insertBefore('#confirmBtn');
+
+            // Function to update the time input field to the current time
+            const updateTime = () => {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                const dd = String(now.getDate()).padStart(2, '0');
+                const hh = String(now.getHours()).padStart(2, '0');
+                const min = String(now.getMinutes()).padStart(2, '0');
+
+                // Set date to today
+                const currentDate = `${yyyy}-${mm}-${dd}`;
+                $dateInput.val(currentDate);
+
+                // Set time to current time
+                const currentTime = `${hh}:${min}`;
+                $timeInput.val(currentTime);
+            };
+
+            // Initial update of the time and date
+            updateTime();
+
+            // Update time every minute
+            setInterval(updateTime, 60000);
+
+            // Validate the form fields
+            function validateForm() {
+                const phoneNumber = $('#hp').val();
+                const selectedDate = new Date($dateInput.val());
+                const selectedTime = $timeInput.val();
+                const now = new Date();
+                const currentDateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                const currentTimeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+                let errorMessage = '';
+
+                // Validate phone number (digits only and reasonable length)
+                if (!/^\d{10,15}$/.test(phoneNumber)) {
+                    errorMessage = 'Phone number invalid';
+                }
+
+                // Validate date and time
+                if (selectedDate < now || (selectedDate.toDateString() === now.toDateString() && selectedTime < currentTimeString)) {
+                    errorMessage = 'Reservation date or time has passed';
+                }
+
+                if (errorMessage) {
+                    $errorMessage.text(errorMessage);
+                    return false;
+                }
+
+                $errorMessage.text('');
+                return true;
+            }
+
+            // Attach validation to the button click
+            $('#confirmBtn').click(function() {
+				var loggedIn = sessionStorage.getItem("loggedIn") === "true";
+				if(!loggedIn) {
+					alert("Please log in to proceed with your reservation.");
+					return;
+				}
+                if (validateForm()) {
+                    // Proceed with the reservation
+                    confirmReservation();
+                }
+            });
+        });
+    </script>
+</head>
+<body style="background-color:white;">
+    <!--navigation bar-->
+    <nav id="loginNavbar">
+        <ul id="navlogin">
+            <li>
+                <a href="cart.html">Cart</a>
+            </li>
+            <li>
+                <a href="aboutUs.html">About</a>
+            </li>
+            <li>
+                <a href="contactUsPage.html">Contact Us</a>
+            </li>
+            <li>
+                <button id="loginButton">Log In</button>
+				<span id="greeting"></span>
+				<button id="logoutButton">Log Out</button>
+            </li>
+        </ul>
+    </nav>
+    <nav id="mainNavbar">
+        <ul>
+            <li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+            <li><a href="homePage.html"><button>Home</button></a></li>
+            <li><a href="menuPage.html"><button>Menu</button></a></li>
+            <li><a href="reservationPage.html"><button>Reservation</button></a></li>
+            <li><a href="outletPage.html"><button>Outlet</button></a></li>
+        </ul>
+    </nav>
+    <!-- navigation bar end -->
+    <!--modal login-->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+            <hr style="width: 90%">
+            <p style="text-align:center;">RKZ Restaurant</p>
+            <center>
+                <form>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <button type="submit">LOGIN</button>
+                    <p>Don't have an account?</p>
+                    <p>
+                        <a href="registerPage.html">Register now!</a>
+                    </p>
+                </form>
+            </center>
+        </div>
+    </div>
+    <!--modal login end-->
+    <main>
+        <div class="container">
+			<div class="reservation-form">
+				<form onsubmit="return validateForm()">
+					<h1 align="center">Reservation</h1>
+					<hr>
+					<label for="username">Customer Name: </label>
+					<input type="text" id="username" name="username" placeholder="Insert Your Name" required>
+					<label for="hp">Phone Number: </label>
+					<input type="tel" id="hp" name="No_HP" placeholder="Insert Your Phone Number" required>
+					<label for="Category">Select Outlet:</label>
+					<select name="Category" id="Category">
+						<option value="">Outlet 1</option>
+						<option value="">Outlet 2</option>
+						<option value="">Outlet 3</option>
+						<option value="">Outlet 4</option>
+						<option value="">Outlet 5</option>
+						<option value="">Outlet 6</option>
+					</select>
+					<label for="dob">Choose Reservation Date:</label>
+					<input type="date" id="dob" name="dob" required>
+					<label for="time">Choose Time Reservation:</label>
+					<input type="time" id="time" name="time" required>
+					<button type="button" id="confirmBtn" align="center">Confirmation</button>
+				</form>
+			</div>
+		</div>
+		<!-- Pop-up overlay -->
+		<div class="overlay" id="overlay">
+			<div class="popup">
+				<p>Are you sure you want to reserve?</p>
+				<button onclick="proceedReservation()">Yes</button>
+				<button onclick="closePopup()">No</button>
+			</div>
+		</div>
+    </main>
+    <footer class="footer">
+        <div class="links">
+            <div class="social">
+            <h3>LINKS</h3>
+            <ul>
+                <li><a href="homePage.html">Home</a></li>
+                <li><a href="menuPage.html">Menu</a></li>
+                <li><a href="contactUsPage.html">Contact Us</a></li>
+                <li><a href="aboutUs.html">About Us</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h3>FOLLOW US</h3>
+            <div class="social-icons">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="contact">
+            <h3>CONTACT</h3>
+            <ul>
+                <li>+62 821-5500-5925</li>
+                <li><a href="contactUsPage.html">info@RKZrestaurant.com</a></li>
+            </ul>
+        </div>
+        <br><br>
+        <div class="copyright" align="center">
+            <h3>© 2023 by RKZ Restaurant. All rights reserved.</h3>
+        </div>
+    </footer>
+	<script>
+		function confirmReservation() {
+            // Open the confirmation popup
+            $('#overlay').show();
+        }
+
+        function proceedReservation() {
+            // Proceed with reservation logic
+            $('#overlay').hide();
+            alert('Reservation confirmed!');
+        }
+
+        function closePopup() {
+            // Close the confirmation popup
+            $('#overlay').hide();
+        }
+	</script>
+</body>
+</html>

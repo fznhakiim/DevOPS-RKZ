@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+    <title>RKZ Restaurant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/style/style.css">
+    <script type="text/javascript" src="src/script/jquery.js"></script>
+    <script type="text/javascript" src="src/script/script.js"></script>
+    <script>
+        $(document).ready(function(){
+			let cartData = {};
+			if (sessionStorage.getItem('cartData')) {
+				cartData = JSON.parse(sessionStorage.getItem('cartData'));
+			}
+
+			$('.menu-cards button').click(function() {
+				let itemName = $(this).closest('.menu-cards').find('.menu-cards-name p').text();
+				
+				// Check if there is a discounted price, otherwise use the regular price
+				let discountedPriceElement = $(this).closest('.menu-cards').find('.discounted-price');
+				let itemPriceText;
+				if (discountedPriceElement.length) {
+					itemPriceText = discountedPriceElement.text();
+				} else {
+					itemPriceText = $(this).closest('.menu-cards').find('.menu-cards-price p').text();
+				}
+
+				// Remove any currency symbols and format the price correctly
+				let itemPrice = parseFloat(itemPriceText.replace(/[Rp.\$,\s]/g, '').replace(',', '.'));
+
+				if (cartData[itemName]) {
+					// Item already exists, increase its quantity
+					cartData[itemName].quantity += 1;
+				} else {
+					// Item does not exist, add a new item to the cart
+					cartData[itemName] = {
+						price: itemPrice,
+						quantity: 1
+					};
+				}
+				// Save the updated cart data to session storage
+				sessionStorage.setItem('cartData', JSON.stringify(cartData));
+				window.location.href = 'menuPage.html'; 
+			});
+		});
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"><!--footer social media font-->
+</head>
+<body style="background-color:white;">
+    <!--navigation bar-->
+    <nav id="loginNavbar">
+        <ul id="navlogin">
+            <li>
+                <a href="cart.html">Cart</a>
+            </li>
+            <li>
+                <a href="aboutUs.html">About</a>
+            </li>
+            <li>
+                <a href="contactUsPage.html">Contact Us</a>
+            </li>
+            <li>
+                <button id="loginButton">Log In</button>
+				<span id="greeting"></span>
+				<button id="logoutButton">Log Out</button>
+            </li>
+        </ul>
+    </nav>
+    <nav id="mainNavbar">
+        <ul>
+            <li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+            <li><a href="homePage.html"><button>Home</button></a></li>
+            <li><a href="menuPage.html"><button>Menu</button></a></li>
+            <li><a href="reservationPage.html"><button>Reservation</button></a></li>
+            <li><a href="outletPage.html"><button>Outlet</button></a></li>
+        </ul>
+    </nav>
+    <!-- navigation bar end -->
+    <!--modal login-->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+            <hr style="width: 90%">
+            <p style="text-align:center;">RKZ Restaurant</p>
+            <center>
+                <form>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <button type="submit">LOGIN</button>
+                    <p>Don't have an account?</p>
+                    <p>
+                        <a href="registerPage.html">Register now!</a>
+                    </p>
+                </form>
+            </center>
+        </div>
+    </div>
+    <!--modal login end-->
+    <!-- Carousel -->
+    <div class="slideshow-container">
+        <div class="slide fade">
+            <img src="src/img/3604421.png" style="width:100%">
+        </div>
+        <div class="slide fade">
+            <img src="src/img/4066838.png" style="width:100%">
+        </div>
+        <div class="slide fade">
+            <img src="src/img/3807861.png" style="width:100%">
+        </div>
+        <!-- Tombol panah -->
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <br>    
+
+    <!-- Titik navigasi -->
+    <div style="text-align:center">
+        <span class="dot" onclick="currentSlide(1)"></span> 
+        <span class="dot" onclick="currentSlide(2)"></span> 
+        <span class="dot" onclick="currentSlide(3)"></span> 
+    </div>
+    <!-- Carousel End -->
+    <!--Main Content-->
+    <div id="content1">
+        <div id="content1-main">
+            <h1 style="margin:20px 10%;font-family:'Roboto', sans-serif;">SPECIAL OFFERS</h1>
+			<div class="slider-container">
+				<button class="slider-prev" onclick="plusSlides1(-1)">&#10094;</button>
+				<div class="menu-cards-slider special-offer-slider">
+					<div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/Steak.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Prime Sirloin Steak</p>
+						</div>
+						<div class="menu-cards-price">
+							<p class="original-price" style="text-decoration: line-through; color: grey;">Rp.300.000</p>
+							<p class="discounted-price">Rp.250.000</p>
+						</div>
+						<button>Order</button>
+					</div>
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/chophouse steak.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Rib-eye Steak</p>
+						</div>
+						<div class="menu-cards-price">
+							<p class="original-price" style="text-decoration: line-through; color: grey;">Rp.298.000</p>
+							<p class="discounted-price">Rp.242.000</p>
+						</div>
+						<button>Order</button>
+					</div>
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/Cooked Salmon.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Salmon Steak</p>
+						</div>
+						<div class="menu-cards-price">
+							<p class="original-price" style="text-decoration: line-through; color: grey;">Rp.198.000</p>
+							<p class="discounted-price">Rp.180.000</p>
+						</div>
+						<button>Order</button>
+					</div>
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/Steak Burger.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Steak Burger</p>
+						</div>
+						<div class="menu-cards-price">
+							<p class="original-price" style="text-decoration: line-through; color: grey;">Rp.48.000</p>
+							<p class="discounted-price">Rp.24.000</p>
+						</div>
+						<button>Order</button>
+					</div>
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/Salmon Salad.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Salad Salmon</p>
+						</div>
+						<div class="menu-cards-price">
+							<p class="original-price" style="text-decoration: line-through; color: grey;">Rp.98.000</p>
+							<p class="discounted-price">Rp.74.000</p>
+						</div>
+						<button>Order</button>
+					</div>
+                </div>
+                <button class="slider-next" onclick="plusSlides1(1)">&#10095;</button>
+            </div>
+            <h1 style="margin:20px 10%;font-family:'Roboto', sans-serif;">POPULAR PICKS</h1>
+            <div class="slider-container">
+                <button class="slider-prev" onclick="plusSlides2(-1)">&#10094;</button>
+                <div class="menu-cards-slider top-picks-slider">
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/chophouse steak.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Rib-eye Steak</p>
+						</div>
+						<div class="menu-cards-price">
+                        <p>Rp.242.000</p>
+						</div>
+                        <button>Order</button>
+                    </div>
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/Cooked Salmon.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Salmon Steak</p>
+						</div>
+						<div class="menu-cards-price">
+                        <p>Rp.180.000</p>
+						</div>
+                        <button>Order</button>
+                    </div>
+                    <div class="menu-cards">
+						<div class="menu-cards-image">
+							<img src="src/img/Steak.png">
+						</div>
+						<div class="menu-cards-name">
+							<p>Prime Sirloin Steak</p>
+						</div>
+						<div class="menu-cards-price">
+                        <p>Rp.250.000</p>
+						</div>
+                        <button>Order</button>
+                    </div>
+                </div>
+                <button class="slider-next" onclick="plusSlides2(1)">&#10095;</button>
+            </div>
+        </div>
+        <div id="content1-side">
+            <h1>RESERVATION</h1>
+            <p style="text-align: center;font-size:12px;">Secure your spot for an unforgettable dining experience at our restaurant.</p>
+            <hr>
+            <br>
+            <center>
+                <P>We're open everyday!</p>
+                <p>8:00am - 10:00pm</p>
+            </center>
+            <a href="reservationPage.html"><button>Reserve a Seat</button></a>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="links">
+            <div class="social">
+            <h3>LINKS</h3>
+            <ul>
+                <li><a href="homePage.html">Home</a></li>
+                <li><a href="menuPage.html">Menu</a></li>
+                <li><a href="contactUsPage.html">Contact Us</a></li>
+                <li><a href="aboutUs.html">About Us</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h3>FOLLOW US</h3>
+            <div class="social-icons">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="contact">
+            <h3>CONTACT</h3>
+            <ul>
+                <li>+62 821-5500-5925</li>
+                <li><a href="contactUsPage.html">info@RKZrestaurant.com</a></li>
+            </ul>
+        </div>
+        <br><br>
+        <div class="copyright" align="center">
+            <h3>© 2023 by RKZ Restaurant. All rights reserved.</h3>
+        </div>
+    </footer>
+	<script type="text/javascript" src="src/script/homeslides.js"></script>
+</body>
+</html>

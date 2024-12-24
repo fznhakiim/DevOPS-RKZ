@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="src/style/style.css">
+    <style>
+        /* Existing styles */
+        @import url('https://fonts.googleapis.com/css?family=Poppins');
+        * {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .contactUs-form {
+            width: 80%;
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .contactUs-form form {
+            text-align: left;
+        }
+        .contactUs-form form label {
+            display: block;
+            margin-top: 10px;
+        }
+        .contactUs-form form input,
+        .contactUs-form form select,
+        .contactUs-form form button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .contactUs-form form button {
+            margin-top: 20px;
+            background-color: #f27f7f;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .contactUs-form form button:hover {
+            background-color: #ef7878;
+        }
+        /* Pop-up overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .popup {
+            position: fixed;
+            background-color: white;
+            width: 300px;
+            padding: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .popup button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+	<script src="src/script/jquery.js"></script>
+	<script src="src/script/script.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"><!--footer social media font-->
+	<script>
+        function submitMessage(event) {
+            event.preventDefault();
+            document.getElementById("contact-form").reset();
+            alert("Thank you for contacting us!");
+        }
+    </script>
+</head>
+<body style="background-color:white;">
+ <!--navigation bar-->
+    <nav id="loginNavbar">
+        <ul id="navlogin">
+            <li>
+                <a href="cart.html">Cart</a>
+            </li>
+            <li>
+                <a href="aboutUs.html">About</a>
+            </li>
+            <li>
+                <a href="contactUsPage.html">Contact Us</a>
+            </li>
+            <li>
+                <button id="loginButton">Log In</button>
+				<span id="greeting"></span>
+				<button id="logoutButton">Log Out</button>
+            </li>
+        </ul>
+    </nav>
+    <nav id="mainNavbar">
+        <ul>
+            <li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+            <li><a href="homePage.html"><button>Home</button></a></li>
+            <li><a href="menuPage.html"><button>Menu</button></a></li>
+            <li><a href="reservationPage.html"><button>Reservation</button></a></li>
+            <li><a href="outletPage.html"><button>Outlet</button></a></li>
+        </ul>
+    </nav>
+    <!-- navigation bar end -->
+    <!--modal login-->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+            <hr style="width: 90%">
+            <p style="text-align:center;">RKZ Restaurant</p>
+            <center>
+                <form>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <button type="submit">LOGIN</button>
+                    <p>Don't have an account?</p>
+                    <p>
+                        <a href="registerPage.html">Register now!</a>
+                    </p>
+                </form>
+            </center>
+        </div>
+    </div>
+    <!--modal login end-->
+    <main>
+        <div class="container">
+            <div class="contactUs-form">
+                <form id="contact-form" onsubmit="submitMessage(event)">
+                    <h1 align="center">CONTACT US</h1>
+                    <p align="center">RKZ Restaurant</p>
+                    <br>
+                    <hr>
+                    <label for="username">Customer Name: </label>
+                        <input type="text" id="username" name="username" placeholder="Insert Your Name" required>
+                    <label for="hp">Phone Number: </label>
+                        <input type="" id="hp" name="No_HP" placeholder="Insert Your Phone Number" required>
+                    <label for="email">Email: </label>
+                        <input type="email" name="email" placeholder="Insert Your Email" required>
+                    <label for="dob">Category:</label>
+                        <select name="Category" id="Category">
+                            <option value="">Customer Service</option>
+                            <option value="">Comments or Suggestions</option>
+                        </select>
+                    <label for="Orderfor">Note:</label>
+                    <textarea rows="5" cols="60" id=""></textarea>
+                    <button type="submit" align="center">Submit</button>
+                </form>
+            </div>
+        </div>
+        <!-- Pop-up overlay -->
+        <div class="overlay" id="overlay">
+            <div class="popup">
+                <p>Apakah Anda yakin untuk reservasi?</p>
+                <button onclick="proceedReservation()">Ya</button>
+                <button onclick="closePopup()">Tidak</button>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="links">
+            <div class="social">
+            <h3>LINKS</h3>
+            <ul>
+                <li><a href="homePage.html">Home</a></li>
+                <li><a href="menuPage.html">Menu</a></li>
+                <li><a href="contactUsPage.html">Contact Us</a></li>
+                <li><a href="aboutUs.html">About Us</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h3>FOLLOW US</h3>
+            <div class="social-icons">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="contact">
+            <h3>CONTACT</h3>
+            <ul>
+                <li>+62 821-5500-5925</li>
+                <li><a href="contactUsPage.html">info@RKZrestaurant.com</a></li>
+            </ul>
+        </div>
+        <br><br>
+        <div class="copyright" align="center">
+            <h3>© 2023 by RKZ Restaurant. All rights reserved.</h3>
+        </div>
+    </footer>
+</body>
+</html>

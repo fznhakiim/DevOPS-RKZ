@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RKZ Restaurant - Cart</title>
+    <link rel="stylesheet" href="src/style/style.css">
+	<script type="text/javascript" src="src/script/jquery.js"></script>
+    <script type="text/javascript" src="src/script/script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+        }
+		#cart-items {
+			height: 130px;
+			overflow-y: auto;
+		}
+		#cart-buy {
+			width: 90%;
+			color: white;
+			background-color: orange;
+			border: none;
+			height: 2rem;
+			font-weight: 800;
+		}
+		#cart-buy:hover {
+			position: relative;
+			width: 95%;
+			height: 2.5rem;
+			bottom: 10px;
+		}
+        .container {
+            max-width: 800px;
+			height: 420px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: whitesmoke;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container h1, h2 {
+            text-align: center;
+            color: black;
+			margin-bottom: 20px;
+        }
+		.container hr {
+			margin: 1rem;
+		}
+        .item-list, .cart {
+            margin-bottom: 20px;
+        }
+        .item, .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #F4845F;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: #FFFFFF;
+			gap: 1rem;
+        }
+        .item-name, .cart-item-name {
+            flex: 1;
+        }
+        .increase-qty, .decrease-qty, .remove-button {
+            padding: 5px 10px;
+            background-color: #F27059;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .increase-qty:hover, .decrease-qty:hover, .remove-button:hover {
+            background-color: #F25C54;
+        }
+        .remove-button {
+            background-color: #F25C54;
+        }
+        .total {
+            font-weight: bold;
+            color: black;
+        }
+		.item-quantity {
+			border: none;
+			border-radius: 10px;
+			width: 50px;
+			height: 1.5rem;
+			text-align: center;
+		}
+    </style>
+    <script>
+		$(document).ready(function() {
+            // Object to store the cart data
+            let cartData = {};
+
+            // Load cart data from session storage if it exists
+            if (sessionStorage.getItem('cartData')) {
+                cartData = JSON.parse(sessionStorage.getItem('cartData'));
+                renderCart();
+            }
+			
+			$('#cart-buy').click(function() {
+				// Check if the user is logged in
+				var loggedIn = sessionStorage.getItem("loggedIn") === "true";
+				if (!loggedIn) {
+					alert("Please log in to proceed with your order.");
+					return;
+				}
+
+				// Check if delivery address is empty
+				const deliveryAddress = $('#delivery-address').val().trim();
+				if (deliveryAddress === '') {
+					alert("Please enter a delivery address.");
+					return;
+				}
+
+				// Proceed with ordering process (clear cart, display confirmation, etc.)
+				cartData = {};
+				sessionStorage.setItem('cartData', JSON.stringify(cartData));
+				renderCart();
+				alert("Order successful!");
+			});
+
+            // Function to remove an item from the cart
+            function removeFromCart(itemName) {
+                delete cartData[itemName];
+                sessionStorage.setItem('cartData', JSON.stringify(cartData));
+                renderCart();
+            }
+
+            // Function to render the cart from cartData
+            function renderCart() {
+                const cartItemsContainer = $('#cart-items');
+                cartItemsContainer.empty();
+
+                let totalAmount = 0;
+
+                $.each(cartData, function(itemName, itemData) {
+                    const cartItemDiv = $(`
+                        <div class="cart-item">
+                            <span class="cart-item-name">${itemName} x ${itemData.quantity}</span>
+                            <span>Rp. ${(itemData.price * itemData.quantity).toFixed(2)}</span>
+                            <button class="remove-button" data-item="${itemName}">Hapus</button>
+                            <div class="quantity-controls">
+                                <button class="decrease-qty" data-item="${itemName}" data-change="-1">-</button>
+                                <input type="number" class="item-quantity" value="${itemData.quantity}" min="1">
+                                <button class="increase-qty" data-item="${itemName}" data-change="1">+</button>
+                            </div>
+                        </div>
+                    `);
+
+                    cartItemsContainer.append(cartItemDiv);
+                    totalAmount += itemData.price * itemData.quantity;
+                });
+
+                $('#total-amount').text(totalAmount.toFixed(2));
+            }
+
+            // Function to update the quantity of an item
+            function updateQuantity(itemName, change) {
+                if (cartData[itemName]) {
+                    cartData[itemName].quantity += change;
+                    if (cartData[itemName].quantity <= 0) {
+                        delete cartData[itemName];
+                    }
+                    sessionStorage.setItem('cartData', JSON.stringify(cartData));
+                    renderCart();
+                }
+            }
+
+            //Event listeners
+            $(document).on('click', '.remove-button', function() {
+                const itemName = $(this).data('item');
+                removeFromCart(itemName);
+            });
+
+            $(document).on('click', '.increase-qty, .decrease-qty', function() {
+                const itemName = $(this).data('item');
+                const change = parseInt($(this).data('change'));
+                updateQuantity(itemName, change);
+            });
+
+            $(document).on('change', '.item-quantity', function() {
+                const itemName = $(this).closest('.cart-item').find('.cart-item-name').text().split(' x ')[0];
+                const newQuantity = parseInt($(this).val());
+                if (newQuantity > 0) {
+                    cartData[itemName].quantity = newQuantity;
+                } else {
+                    delete cartData[itemName];
+                }
+                sessionStorage.setItem('cartData', JSON.stringify(cartData));
+                renderCart();
+            });
+        });
+    </script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"><!--footer social media font-->	
+</head>
+<body style="background-color:white;">
+	<!--navigation bar-->
+    <nav id="loginNavbar">
+        <ul id="navlogin">
+            <li>
+                <a href="cart.html">Cart</a>
+            </li>
+            <li>
+                <a href="aboutUs.html">About</a>
+            </li>
+            <li>
+                <a href="contactUsPage.html">Contact Us</a>
+            </li>
+            <li>
+                <button id="loginButton">Log In</button>
+				<span id="greeting"></span>
+				<button id="logoutButton">Log Out</button>
+            </li>
+        </ul>
+    </nav>
+    <nav id="mainNavbar">
+        <ul>
+            <li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+            <li><a href="homePage.html"><button>Home</button></a></li>
+            <li><a href="menuPage.html"><button>Menu</button></a></li>
+            <li><a href="reservationPage.html"><button>Reservation</button></a></li>
+            <li><a href="outletPage.html"><button>Outlet</button></a></li>
+        </ul>
+    </nav>
+    <!-- navigation bar end -->
+    <!--modal login-->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+            <hr style="width: 90%">
+            <p style="text-align:center;">RKZ Restaurant</p>
+            <center>
+                <form>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <button type="submit">LOGIN</button>
+                    <p>Don't have an account?</p>
+                    <p>
+                        <a href="registerPage.html">Register now!</a>
+                    </p>
+                </form>
+            </center>
+        </div>
+    </div>
+    <!--modal login end-->
+    <div class="container">
+        <h1 style="font-weight:800;">CART</h1>
+		<hr>
+        <div class="cart">
+            <div id="cart-items"></div>
+            <div class="total">Total: Rp. <span id="total-amount">0</span></div>
+        </div>
+		<form style="margin: 20px">
+			<p><label for="delivery-address">Address:</label></p>
+			<textarea id="delivery-address" name="delivery-address" rows="4" cols="50"></textarea>
+		</form>
+		<center>
+			<button id="cart-buy">ORDER</button>
+		</center>
+    </div>
+	<br><br>
+    <footer class="footer">
+        <div class="links">
+            <div class="social">
+            <h3>LINKS</h3>
+            <ul>
+                <li><a href="homePage.html">Home</a></li>
+                <li><a href="menuPage.html">Menu</a></li>
+                <li><a href="contactUsPage.html">Contact Us</a></li>
+                <li><a href="aboutUs.html">About Us</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="social">
+            <h3>FOLLOW US</h3>
+            <div class="social-icons">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="contact">
+            <h3>CONTACT</h3>
+            <ul>
+                <li>+62 821-5500-5925</li>
+                <li><a href="contactUsPage.html">info@RKZrestaurant.com</a></li>
+            </ul>
+        </div>
+        <br><br>
+        <div class="copyright" align="center">
+            <h3>© 2023 by RKZ Restaurant. All rights reserved.</h3>
+        </div>
+    </footer>
+</body>
+</html>

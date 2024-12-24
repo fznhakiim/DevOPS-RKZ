@@ -1,0 +1,562 @@
+<!doctype html>
+<html>
+	<head>
+		<title>RKZ Restaurant - Menu</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="src/style/style.css">
+		<style>
+			#content-container {
+				display: flex;
+				width: 98%;
+				margin: 5px 10px;
+				justify-content: space-between;
+			}
+			#menu-container {
+				width: 70%;
+			}
+			.menu-groups {
+				margin: 10px 0;
+			}
+			.menu-groups h1 {
+				font-family: 'Segoe UI', Tahoma, sans-serif;
+				font-weight: 900;
+				margin-left: 15px;
+			}
+			.menu-groups hr {
+				margin-top: 5px;
+				margin-bottom: 10px;
+			}
+			#filterBar {
+				display: flex;
+				height: 30px;
+			}
+			#order-cart {
+				border-radius: 10px;
+				border: 1px solid #f2f2f2;
+				position: sticky;
+				top: 20px;
+				height: 400px;
+				width: 28%;
+				padding: 20px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			}
+			#order-cart a button {
+				width: 100%;
+				color: white;
+				background-color: orange;
+				border: none;
+				height: 2.5rem;
+				border-radius: 5px;
+				font-weight: 900;
+				cursor: pointer;
+			}
+			#order-cart a button:hover {
+				background-color: #e89517;
+			}
+			#cart-content-container {
+				width: 100%;
+				height: 200px;
+				overflow-y: auto;
+				border-radius: 10px;
+				background-color: #f5f5f5;
+				margin-top: 15px;
+				margin-bottom: 30px;
+			}
+			#cart-content {
+				list-style: none;
+			}
+
+			.cart-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				background-color: white;
+				border: 2px solid orange;
+				border-radius: 8px;
+				padding: 10px;
+				margin-bottom: 10px;
+				flex-wrap: wrap; /* Ensure items wrap within the container */
+			}
+
+			.cart-item-container {
+				display: flex;
+				justify-content: space-between;
+				width: 100%;
+				align-items: center;
+				flex-wrap: wrap; /* Ensure items wrap within the container */
+			}
+
+			.item-name-wrap {
+				font-size: 16px;
+				font-weight: bold;
+				color: orange;
+				flex: 1;
+				min-width: 150px; /* Ensure minimum width */
+				flex-shrink: 0; /* Prevent shrinking */
+			}
+
+			.item-price-wrap {
+				font-size: 14px;
+				color: #555;
+				margin-left: 10px;
+				flex-shrink: 0; /* Prevent shrinking */
+			}
+
+			.quantity-controls {
+				display: flex;
+				align-items: center;
+				margin-left: 20px;
+				flex-shrink: 0; /* Prevent shrinking */
+			}
+
+			.quantity-controls button {
+				background-color: orange;
+				color: white;
+				border: none;
+				padding: 5px 10px;
+				cursor: pointer;
+				font-size: 16px;
+				border-radius: 4px;
+				margin: 0 5px;
+				flex-shrink: 0; /* Prevent shrinking */
+			}
+
+			.quantity-controls button:hover {
+				background-color: darkorange;
+			}
+
+			.quantity-controls .item-quantity {
+				width: 50px;
+				text-align: center;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 5px;
+				margin: 0 5px;
+				flex-shrink: 0; /* Prevent shrinking */
+			}
+
+			.remove-item {
+				background-color: red;
+				color: white;
+				border: none;
+				font-weight: 900;
+				padding: 5px;
+				border-radius: 3px;
+				pointer: cursor;
+				flex-shrink: 0; /* Prevent shrinking */
+			}
+		</style>
+		<script type="text/javascript" src="src/script/jquery.js"></script>
+		<script type="text/javascript" src="src/script/script.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				let slidesIndex = [0, 0, 0, 0]; // slidesIndex[0] is main, [1] is side, [2] is desserts, [3] is drinks
+
+				function slidesControl(uniqueClassName, index, n) {
+					const slider = document.querySelector('.' + uniqueClassName);
+					const slides = slider.querySelectorAll('.menu-cards');
+					if (n >= slides.length) { slidesIndex[index] = 0; }
+					if (n < 0) { slidesIndex[index] = slides.length - 1; }
+					slider.scrollLeft = slides[slidesIndex[index]].offsetLeft - slider.offsetLeft;
+				}
+				//goToSlide function di window biar scope global dan bisa dipanggil button di luar fungsi anonimus document.ready
+				window.goToSlide = function(index, n) {
+					slidesIndex[index] += n;
+					switch(index) {
+						case 0:
+							slidesControl('main-dish', index, slidesIndex[index]);
+							break;
+						case 1:
+							slidesControl('side-dish', index, slidesIndex[index]);
+							break;
+						case 2:
+							slidesControl('desserts-menu', index, slidesIndex[index]);
+							break;
+						case 3:
+							slidesControl('drinks-menu', index, slidesIndex[index]);
+							break;
+					}
+				};
+				// Cart functions
+				// Object to store the cart data
+				let cartData = {};
+
+				// Load cart data from session storage if it exists
+				if (sessionStorage.getItem('cartData')) {
+					cartData = JSON.parse(sessionStorage.getItem('cartData'));
+					renderCart();
+				}
+
+				$('.menu-cards button').click(function() {
+					let itemName = $(this).closest('.menu-cards').find('.menu-cards-name p').text();
+					let itemPriceText = $(this).closest('.menu-cards').find('.menu-cards-price p').text();
+
+					// Remove any currency symbols and format the price correctly
+					let itemPrice = parseFloat(itemPriceText.replace(/[Rp.\$,\s]/g, '').replace(',', '.'));
+
+					if (cartData[itemName]) {
+						// Item already exists, increase its quantity
+						cartData[itemName].quantity += 1;
+					} else {
+						// Item does not exist, add a new item to the cart
+						cartData[itemName] = {
+							price: itemPrice,
+							quantity: 1
+						};
+					}
+					// Save the updated cart data to session storage
+					sessionStorage.setItem('cartData', JSON.stringify(cartData));
+					renderCart();
+				});
+
+				// Handle increase button clicks
+				$(document).on('click', '.increase-qty', function() {
+					let itemName = $(this).closest('.cart-item').find('.item-name-wrap').text();
+					cartData[itemName].quantity += 1;
+					// Save the updated cart data to session storage
+					sessionStorage.setItem('cartData', JSON.stringify(cartData));
+					renderCart();
+				});
+
+				// Handle decrease button clicks
+				$(document).on('click', '.decrease-qty', function() {
+					let itemName = $(this).closest('.cart-item').find('.item-name-wrap').text();
+					if (cartData[itemName].quantity >= 1) {
+						cartData[itemName].quantity -= 1;
+					}
+					// Save the updated cart data to session storage
+					sessionStorage.setItem('cartData', JSON.stringify(cartData));
+					renderCart();
+				});
+
+				// Handle manual input in quantity field
+				$(document).on('input', '.item-quantity', function() {
+					let itemName = $(this).closest('.cart-item').find('.item-name-wrap').text();
+					let newQuantity = parseInt($(this).val());
+					if (newQuantity < 0) {
+						cartData[itemName].quantity = 0;
+					} else {
+						cartData[itemName].quantity = newQuantity;
+					}
+					// Save the updated cart data to session storage
+					sessionStorage.setItem('cartData', JSON.stringify(cartData));
+					renderCart();
+				});
+				
+				// Handle remove item button clicks
+				$(document).on('click', '.remove-item', function() {
+					let itemName = $(this).closest('.cart-item').find('.item-name-wrap').text();
+					delete cartData[itemName];
+					// Save the updated cart data to session storage
+					sessionStorage.setItem('cartData', JSON.stringify(cartData));
+					renderCart();
+				});
+
+				// Function to render the cart from cartData
+				function renderCart() {
+					$('#cart-content').empty();
+					$.each(cartData, function(itemName, itemData) {
+						$('#cart-content').append(
+							"<li class='cart-item'>" +
+								"<div class='cart-item-container'>" +
+									"<span class='item-name-wrap'>" + itemName + "</span>" +
+									"<span class='item-price-wrap'>" + itemData.price.toFixed(2) + "</span>" +
+									"<div class='quantity-controls'>" +
+										"<button class='decrease-qty'>-</button>" +
+										"<input type='number' class='item-quantity' value='" + itemData.quantity + "' min='1'>" +
+										"<button class='increase-qty'>+</button>" +
+									"</div>" +
+									"<button class='remove-item'>X</button>" +  // Add 'X' button
+								"</div>" +
+							"</li>"
+						);
+					});
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<!--navigation bar-->
+		<nav id="loginNavbar">
+			<ul id="navlogin">
+				<li>
+					<a href="cart.html">Cart</a>
+				</li>
+				<li>
+					<a href="aboutUs.html">About</a>
+				</li>
+				<li>
+					<a href="contactUsPage.html">Contact Us</a>
+				</li>
+				<li>
+					<button id="loginButton">Log In</button>
+					<span id="greeting"></span>
+					<button id="logoutButton">Log Out</button>
+				</li>
+			</ul>
+		</nav>
+		<nav id="mainNavbar">
+			<ul>
+				<li><a href="homePage.html"><img src="src/img/logo.png"></a></li>
+				<li><a href="homePage.html"><button>Home</button></a></li>
+				<li><a href="menuPage.html"><button>Menu</button></a></li>
+				<li><a href="reservationPage.html"><button>Reservation</button></a></li>
+				<li><a href="outletPage.html"><button>Outlet</button></a></li>
+			</ul>
+		</nav>
+		<!-- navigation bar end -->
+		<!--modal login-->
+		<div id="login-modal">
+			<div id="login-modal-content">
+				<h1 style="text-align:center;font-family:'Segoe UI',Tahoma,sans-serif;font-size:36px;">LOGIN</h1>
+				<hr style="width: 90%">
+				<p style="text-align:center;">RKZ Restaurant</p>
+				<center>
+					<form>
+						<input type="text" id="username" name="username" placeholder="Username" required>
+						<input type="password" id="password" name="password" placeholder="Password" required>
+						<button type="submit">LOGIN</button>
+						<p>Don't have an account?</p>
+						<p>
+							<a href="registerPage.html">Register now!</a>
+						</p>
+					</form>
+				</center>
+			</div>
+		</div>
+		<!--modal login end-->
+		<div id="content-container"> <!--content container-->
+			<div id="menu-container"> <!--main content (menu)-->
+			<!--individual menu groups and their item cards-->
+				<div class="menu-groups">
+					<h1>Main</h1>
+					<hr>
+					<div class="slider-container">
+						<button class="slider-prev" onclick="goToSlide(0,-1)">&#10094;</button>
+						<div class="menu-cards-slider main-dish">
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/chophouse steak.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Rib-eye Steak</p>
+								</div>
+								<div class="menu-cards-price">
+								<p>Rp.242.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Steak.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Prime Sirloin Steak</p>
+								</div>
+								<div class="menu-cards-price">
+								<p>Rp.250.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/tenderloin.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Tenderloin Steak</p>
+								</div>
+								<div class="menu-cards-price">
+								<p>Rp.228.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Cooked Salmon.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Salmon Steak</p>
+								</div>
+								<div class="menu-cards-price">
+								<p>Rp.180.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Chicken Steak.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Chicken Steak</p>
+								</div>
+								<div class="menu-cards-price">
+								<p>Rp.148.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+						</div>
+						<button class="slider-next" onclick="goToSlide(0,1)">&#10095;</button>
+					</div>
+				</div>
+				<div class="menu-groups">
+					<h1>Side</h1>
+					<hr>
+					<div class="slider-container">
+						<button class="slider-prev" onclick="goToSlide(1,-1)">&#10094;</button>
+						<div class="menu-cards-slider side-dish">
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Salmon Salad.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Salad Salmon</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.74.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Chicken.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Chicken Tender</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.38.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/French Fries.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>French Fry</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.20.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/wedges.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Potato Wedges</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.20.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+						</div>
+						<button class="slider-next" onclick="goToSlide(1,1)">&#10095;</button>
+					</div>
+				</div>
+				<div class="menu-groups">
+					<h1>Desserts</h1>
+					<hr>
+					<div class="slider-container">
+						<button class="slider-prev" onclick="goToSlide(2,-1)">&#10094;</button>
+						<div class="menu-cards-slider desserts-menu">
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Ice Cream.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Soft-Serve Ice Cream</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.18.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/Pudding.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Silk Caramel Pudding</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.21.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/tiramisu.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Tiramisu Cake</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.21.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+						</div>
+						<button class="slider-next" onclick="goToSlide(2,1)">&#10095;</button>
+					</div>
+				</div>
+				<div class="menu-groups">
+					<h1>Drinks</h1>
+					<hr>
+					<div class="slider-container">
+						<button class="slider-prev" onclick="goToSlide(3,-1)">&#10094;</button>
+						<div class="menu-cards-slider drinks-menu">
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/sunset orange.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Sunset Orange</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.25.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/vanilla milkshake.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Vanilla Milkshake</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.20.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+							<div class="menu-cards">
+								<div class="menu-cards-image">
+									<img src="src/img/coke.png">
+								</div>
+								<div class="menu-cards-name">
+									<p>Coke Soda</p>
+								</div>
+								<div class="menu-cards-price">
+									<p>Rp.8.000</p>
+								</div>
+								<button>Order</button>
+							</div>
+						</div>
+						<button class="slider-next" onclick="goToSlide(3,1)">&#10095;</button>
+					</div>
+				</div>
+			</div>
+			<div id="order-cart"> <!--side content (cart)-->
+				<h1 style="font-family:'Segoe UI',sans-serif">Your Order</h1>
+				<div id="cart-content-container"style=''>
+					<ul  id="cart-content"> <!--need to script this-->
+					</ul>
+				</div>
+				<a href="cart.html"><button>Checkout</button></a>
+			</div>
+		</div>
+	</body>
+</html>

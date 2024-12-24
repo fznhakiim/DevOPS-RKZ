@@ -1,0 +1,514 @@
+*, html{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+#login-modal {
+	display: none;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+	justify-content: center;
+	align-items: center;
+}
+
+#login-modal-content {
+	background-color: white;
+	width: 30%;
+	height: 60%;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column; /* Ensure content stacks vertically */
+	justify-content: center;
+	align-items: center;
+	padding: 20px;
+}
+
+#login-modal-content h1 {
+	text-align: center;
+	font-family: 'Segoe UI', Tahoma, sans-serif;
+	margin: 2% 0;
+}
+
+#login-modal-content hr {
+	width: 90%;
+	margin: 8px 0;
+}
+
+#login-modal-content p {
+	text-align: center;
+	font-family: 'Segoe UI', Tahoma, sans-serif;
+	margin: 4px 0;
+}
+
+#login-modal-content form {
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+#login-modal-content form input {
+	width: 90%;
+	height: 2rem;
+	border-radius: 5px;
+	margin: 8px 0;
+	border: none;
+	background-color: #f2f2f2; /* Subtle off-white background color */
+	padding: 0.5rem; /* Adjust padding as necessary */
+	line-height: 1.5rem; /* Ensu   re line height matches or is slightly more than the input height for vertical centering of text */
+}
+
+#login-modal-content form button {
+	width: 90%;
+	height: 2.5rem;
+	border-radius: 5px;
+	margin: 10px 0;
+	border: none;
+	background-color: #DC2F02; /* Reddish color for button */
+	color: white;
+	font-size: 1rem;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+#login-modal-content form button:hover {
+	background-color: #a62600; /* Darker shade of red on hover */
+}
+
+#login-modal-content form p {
+	margin-top: 10px;
+}
+
+#loginNavbar {
+    background-color: #DC2F02;
+    display: flex;
+    justify-content: flex-end;
+    height: 15%;
+	padding: 10px 15px;
+}
+
+#mainNavbar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 60px;
+	margin-bottom: 10px;
+}
+
+#mainNavbar ul {
+	list-style: none;
+	display: flex;
+	padding: 0;
+	margin: 20px 0;
+	background-color: white;
+	align-items: center;
+}
+
+#mainNavbar ul li {
+	margin: 0 10px;
+}
+
+#mainNavbar ul li a {
+	text-decoration: none;
+}
+
+#mainNavbar ul li a img {
+    max-height: 60px; /* Adjust based on the height of your navbar */
+    width: auto; /* Maintain aspect ratio */
+    display: block; /* Ensures the image respects the max-height */
+    margin-top: auto; /* Aligns the image to the top of the navbar */
+    margin-bottom: auto; /* Aligns the image to the bottom of the navbar */
+}
+
+#mainNavbar ul li button {
+	background-color: white;
+	color: black;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	font-family: 'Segoe UI', Tahoma,sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#mainNavbar ul li button:hover {
+	background-color: #e65e47;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	color: white;
+}
+
+#loginButton, #logoutButton {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-size: 1rem;
+	background-color: orange;
+	color: white;
+	font-weight: bold;
+	border-radius: 2px;
+	border: none;
+	padding:4px 6.5px;
+	cursor: pointer;
+}
+
+#loginButton:hover {
+	background-color: #F7B267;
+}
+
+#logoutButton {
+	background-color: red;
+}
+
+#greeting {
+	margin-right: 1rem;
+	color: white;
+	font-family: "Segoe UI", Tahoma, sans-serif;
+	font-weight: bold;
+}
+
+#navlogin {
+	display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+}
+
+#navlogin li a{
+    text-decoration: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    font-weight: 600;
+    padding: 8px 0;
+    transition: all;
+    transition-duration: 300ms;
+    border-bottom: 1px solid rgba(0, 0, 0, 0);
+}
+
+#navlogin li a:hover{
+    font-weight: 1000;
+    border-bottom: 1px solid white;
+}
+
+.menu-cards-slider {
+    display: flex;
+    background-color: #F5F5F5;
+    box-sizing: border-box;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    width: 100%;
+    height: 300px;
+	padding: 10px 5px;
+    margin: 0 auto;
+    position: relative; /* Ensure correct positioning of slider */
+    overflow-y: hidden; /* Hide vertical overflow */
+    scroll-behavior: smooth; /* Enable smooth scrolling */
+	scrollbar-width: none; /* Hide scrollbar for firefox*/
+	-ms-overflow-style: none; /* Hide scrollbar for IE*/
+}
+
+.menu-cards-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: auto;
+}
+
+.menu-cards {
+    width: 220px;
+    margin: 0 10px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    height: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centering items horizontally */
+}
+
+.menu-cards-image {
+    width: 90%;
+    height: 125px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} /* This is the menu card image container */
+
+.menu-cards-name {
+    font-weight: 800;
+}
+
+.menu-cards-name, .menu-cards-price {
+    width: 90%;
+    height: 2rem;
+    text-align: left;
+    padding-left: 20px;
+    font-size: 1rem;
+}
+
+.menu-cards button {
+    border-radius: 10px;
+    border: none;
+    background-color: #F25C54;
+    color: white;
+    width: 90%;
+    height: 2rem;
+    margin: 10px auto;
+    text-align: center;
+    cursor: pointer;
+}
+
+.menu-cards button:hover {
+    width: 92%;
+    position: relative;
+    bottom: 5px;
+}
+
+.menu-cards img {
+    width: auto;
+    height: 100%;
+    display: block;
+    margin: 0 auto; /* Centering image */
+}
+
+
+.slider-prev, .slider-next {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: none;
+    cursor: pointer;
+	padding:10px 5px;
+}
+
+#content1 {
+	display:flex;
+	height: 800px;
+	justify-content:center;
+	gap: 1rem;
+	margin: 2rem;
+}
+
+#content1-main {
+	border-radius: 10px;
+	width: 60%;
+}
+
+#content1-side {
+    padding: 20px;
+	height: 300px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+#content1-side h1 {
+	font-family: "Roboto", sans-serif;
+	text-align:center;
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+#content1-side p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+#content1-side center p {
+	font-family: 'Segoe UI', sans-serif;
+	font-weight: 600;
+}
+
+#content1-side button {
+    border-radius: 10px;
+    border: none;
+    background-color: #F25C54;
+    color: white;
+    width: 100%;
+    height: 2.5rem;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#content1-side button:hover {
+    background-color: #d9534f;
+}
+
+
+#promotions-carousel {
+	display: flex;
+	background-color: white;
+	border: 1px solid black;
+	border-radius: 10px;
+	height: 250px;
+	width: 90%;
+	margin: 1rem;
+	overflow: hidden;
+	justify-content: center;
+    align-items: center;
+}
+
+#promotions-carousel img {
+	width: 100%;
+	height: auto;
+
+}
+
+/* Posisi dan ukuran kontainer slideshow */
+.slideshow-container {
+    position: relative;
+    max-width: 1000px;
+    margin: auto;
+    overflow: hidden;
+}
+
+/* Gaya untuk slide */
+.slide {
+    display: none;
+}
+
+/* Efek fade */
+.fade {
+    -webkit-animation-name: fade;
+    -webkit-animation-duration: 1.5s;
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+    from {opacity: .4} 
+    to {opacity: 1}
+}
+
+@keyframes fade {
+    from {opacity: .4} 
+    to {opacity: 1}
+}
+
+/* Tombol navigasi kiri dan kanan */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+/* Hover efek tombol navigasi */
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+/* Titik navigasi */
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+    background-color: #717171;
+}
+
+footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+.footer * {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+.footer {
+	background-color: #d9534f;
+	color: white;
+	padding: 40px 0;
+	position: relative;
+	bottom: 0;
+	width: 100%;
+}
+.footer .links, .footer .social, .footer .contact {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0 20px;
+}
+.footer .links ul, .footer .contact ul {
+	list-style: none;
+	padding: 0;
+}
+.footer .links li, .footer .contact li {
+	margin: 5px 0;
+}
+.footer .links a, .footer .contact a {
+	color: white;
+	text-decoration: none;
+}
+.footer .social-icons a {
+	margin: 0 10px;
+	font-size: 24px;
+	color: white;
+	text-decoration: none;
+	transition: color 0.3s;
+	min
+}
+.footer .social-icons a:hover {
+	color: blue;
+}
+.footer .social-icons a i {
+	margin-right: 8px;
+}
+.footer .copyright {
+	margin-top: 20px;
+	font-size: 12px;
+	color: white;
+}
+.footer .app-icons img {
+	width: 120px;
+	margin: 10px 5px;
+}
+.footer .decorative-pattern {
+	background: url('pattern.png') repeat-x bottom;
+	height: 50px;
+	margin-top: 20px;
+}
+@media (max-width: 768px) {
+	.footer .links, .footer .social, .footer .contact {
+		display: block;
+		margin: 10px 0;
+	}
+}
