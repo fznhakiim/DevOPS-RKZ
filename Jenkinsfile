@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    triggers {
+        cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
+    }
     stages {
         stage('Checkout') {
             steps {
