@@ -1,20 +1,22 @@
 pipeline {
     agent any
     triggers {
-        // Menjadwalkan build setiap 15 menit
-        cron('H/15 * * * *') // Bisa disesuaikan jika Anda ingin menggunakan cron
-        // Untuk otomatis memicu build jika ada perubahan di GitHub, Anda dapat menggunakan webhook.
-        // Webhook di GitHub yang mengarah ke Jenkins untuk memicu build.
+        cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
     }
     environment {
-        DOCKER_IMAGE = 'devops-rkz:latest' // Nama dan tag image Docker
-        CONTAINER_NAME = 'devops-rkz_container' // Nama container Docker
+        DOCKER_IMAGE = 'devops-rkz:latest'
+        CONTAINER_NAME = 'devops-rkz_container'
+        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_REPO = 'fznhakiim/devops-rkz'
     }
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
+                // Menggunakan kredensial untuk GitHub
+                withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+                    git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
+                }
             }
         }
         stage('Build') {
@@ -27,22 +29,25 @@ pipeline {
                 '''
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                bat '''
-                echo Starting test process
-                REM Ayo kita Testing
-                echo Semua tes udah selesai ya!
-                '''
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
                 script {
                     bat """
                     docker build -t ${env.DOCKER_IMAGE} . 
+                    """
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                echo 'Pushing Docker image to Docker Hub...'
+                // Menggunakan kredensial untuk Docker Hub
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    bat """
+                    docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
+                    docker tag ${env.DOCKER_IMAGE} ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.DOCKER_IMAGE}
+                    docker push ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.DOCKER_IMAGE}
                     """
                 }
             }
