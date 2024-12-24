@@ -8,6 +8,7 @@ pipeline {
         CONTAINER_NAME = 'devops-rkz_container'
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_REPO = 'fznhakiim/devops-rkz'
+        DOCKER_USERNAME = 'fznhakiim'
     }
     stages {
         stage('Checkout') {
@@ -39,14 +40,12 @@ pipeline {
                 }
             }
         }
-        stage('Push Docker Image') {
+       stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                // Menggunakan kredensial untuk Docker Hub
                 withCredentials([string(credentialsId: 'DockerHubToken', variable: 'DOCKER_TOKEN')]) {
-                    // Login ke Docker Hub menggunakan token
                     bat """
-                    echo ${DOCKER_TOKEN} | docker login -u ${env.DOCKER_USERNAME} --password-stdin ${env.DOCKER_REGISTRY}
+                    echo ${DOCKER_TOKEN} | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY}
                     docker tag ${env.DOCKER_IMAGE} ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
                     docker push ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
                     """
