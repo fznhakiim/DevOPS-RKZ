@@ -14,9 +14,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                // Menggunakan kredensial untuk GitHub
                 withCredentials([usernamePassword(credentialsId: 'DevOpsRKZ', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
-                    git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
+                    git branch: 'master', url: 'https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/fznhakiim/DevOPS-RKZ.git'
                 }
             }
         }
@@ -25,43 +24,39 @@ pipeline {
                 echo 'Building the project...'
                 bat '''
                 echo Starting build process
-                REM Ayo kita Build
-                echo Build udah selesai yaa!
+                echo Building application...
+                echo Build completed successfully!
                 '''
             }
         }
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                script {
-                    bat """
-                    docker build -t ${env.DOCKER_IMAGE} . 
-                    """
-                }
+                bat "docker build -t ${DOCKER_IMAGE} ."
             }
         }
-       stage('Push Docker Image') {
+        stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
                 withCredentials([string(credentialsId: 'DockerHubToken', variable: 'DOCKER_TOKEN')]) {
-                    bat """
-                    bat "echo $DOCKER_TOKEN | docker login -u fznhakiim --password-stdin"
-                    docker tag ${env.DOCKER_IMAGE} ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
-                    docker push ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
-                    """
+                    script {
+                        bat """
+                        echo ${DOCKER_TOKEN} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                        docker tag ${DOCKER_IMAGE} ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
+                        docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
+                        """
+                    }
                 }
             }
         }
         stage('Deploy Docker Container') {
             steps {
                 echo 'Deploying Docker container...'
-                script {
-                    bat """
-                    docker stop ${env.CONTAINER_NAME} || true
-                    docker rm ${env.CONTAINER_NAME} || true
-                    docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
-                    """
-                }
+                bat """
+                docker stop ${CONTAINER_NAME} || true
+                docker rm ${CONTAINER_NAME} || true
+                docker run -d -p 8080:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+                """
             }
         }
     }
