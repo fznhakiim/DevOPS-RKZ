@@ -45,7 +45,7 @@ pipeline {
                 echo 'Pushing Docker image to Docker Hub...'
                 withCredentials([string(credentialsId: 'DockerHubToken', variable: 'DOCKER_TOKEN')]) {
                     bat """
-                    echo ${DOCKER_TOKEN} | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY}
+                    bat "echo $DOCKER_TOKEN | docker login -u fznhakiim --password-stdin"
                     docker tag ${env.DOCKER_IMAGE} ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
                     docker push ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
                     """
