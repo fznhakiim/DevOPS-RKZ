@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                git branch: 'main', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
+                git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
             }
         }
         stage('Build') {
