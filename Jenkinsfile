@@ -38,8 +38,8 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    sh '''
-                    docker build -t $DOCKER_IMAGE .
+                    bat '''
+                    docker build -t %DOCKER_IMAGE% .
                     '''
                 }
             }
@@ -48,13 +48,13 @@ pipeline {
             steps {
                 echo 'Deploying Docker container...'
                 script {
-                    sh '''
-                    # Hentikan container jika sudah ada
-                    docker stop $DevOPS-RKZ_container || true
-                    docker rm $DevOPS-RKZ_container || true
+                    bat '''
+                    REM Hentikan container jika sudah ada
+                    docker stop %CONTAINER_NAME% || true
+                    docker rm %CONTAINER_NAME% || true
                     
-                    # Jalankan container baru
-                    docker run -d --name $DevOPS-RKZ_container -p 8080:8080 $DOCKER_IMAGE
+                    REM Jalankan container baru
+                    docker run -d --name %CONTAINER_NAME% -p 8080:8080 %DOCKER_IMAGE%
                     '''
                 }
             }
