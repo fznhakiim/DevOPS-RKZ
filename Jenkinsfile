@@ -7,7 +7,7 @@ pipeline {
         DOCKER_IMAGE = 'devops-rkz:latest'
         CONTAINER_NAME = 'devops-rkz_container'
         DOCKER_REGISTRY = 'docker.io'
-        DOCKER_REPO = 'fznhakiim/devops-rkz'
+        DOCKER_REPO = 'fznhakiim/devopsrkz'
     }
     stages {
         stage('Checkout') {
