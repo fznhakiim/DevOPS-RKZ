@@ -42,12 +42,15 @@ pipeline {
                         // Debug credentials
                         echo "Using Docker Hub username: ${DOCKER_USERNAME}"
 
-                        // Login, tag, and push Docker image
-                        bat """
-                        echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                        // Login, tag, and push Docker image securely
+                        bat script: '''
+                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
                         docker tag ${DOCKER_IMAGE} ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
                         docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
-                        """
+                        ''', environment: [
+                            "DOCKER_PASSWORD=${DOCKER_PASSWORD}", 
+                            "DOCKER_USERNAME=${DOCKER_USERNAME}"
+                        ]
                     }
                 }
             }
