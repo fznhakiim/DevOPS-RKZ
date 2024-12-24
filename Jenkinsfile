@@ -8,6 +8,8 @@ pipeline {
         CONTAINER_NAME = 'devops-rkz_container'
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_REPO = 'fznhakiim/devopsrkz'
+        DOCKER_USERNAME = 'fznhakiim'
+        DOCKER_PASSWORD = 'eichforh28051102' // Masukkan password di sini
     }
     stages {
         stage('Checkout') {
@@ -37,21 +39,13 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        // Debug credentials
-                        echo "Using Docker Hub username: ${DOCKER_USERNAME}"
-
-                        // Login, tag, and push Docker image securely
-                        bat script: '''
-                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-                        docker tag ${DOCKER_IMAGE} ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
-                        docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
-                        ''', environment: [
-                            "DOCKER_PASSWORD=${DOCKER_PASSWORD}", 
-                            "DOCKER_USERNAME=${DOCKER_USERNAME}"
-                        ]
-                    }
+                script {
+                    // Login secara manual ke Docker Hub
+                    bat """
+                    echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                    docker tag ${DOCKER_IMAGE} ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
+                    docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
+                    """
                 }
             }
         }
