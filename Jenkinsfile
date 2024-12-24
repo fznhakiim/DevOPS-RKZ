@@ -43,10 +43,10 @@ pipeline {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
                 // Menggunakan kredensial untuk Docker Hub
-                withCredentials([usernamePassword(credentialsId: 'DockerHubCreds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    // Docker login menggunakan password stdin untuk keamanan
+                withCredentials([string(credentialsId: 'DockerHubToken', variable: 'DOCKER_TOKEN')]) {
+                    // Login ke Docker Hub menggunakan token
                     bat """
-                    echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY}
+                    echo ${DOCKER_TOKEN} | docker login -u ${env.DOCKER_USERNAME} --password-stdin ${env.DOCKER_REGISTRY}
                     docker tag ${env.DOCKER_IMAGE} ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
                     docker push ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:latest
                     """
