@@ -3,6 +3,10 @@ pipeline {
     triggers {
         cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
     }
+    environment {
+        DOCKER_IMAGE = 'DevOPS-RKZ:latest' // Nama dan tag image Docker
+        CONTAINER_NAME = 'DevOPS-RKZ_container' // Nama container Docker
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -30,14 +34,29 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Deploying the project...'
-                bat '''
-                echo Starting deployment
-                REM Tambahkan langkah deployment (contoh: copy file)
-                echo Deployment selesai!
-                '''
+                echo 'Building Docker image...'
+                script {
+                    sh '''
+                    docker build -t $DOCKER_IMAGE .
+                    '''
+                }
+            }
+        }
+        stage('Deploy Docker Container') {
+            steps {
+                echo 'Deploying Docker container...'
+                script {
+                    sh '''
+                    # Hentikan container jika sudah ada
+                    docker stop $DevOPS-RKZ_container || true
+                    docker rm $DevOPS-RKZ_container || true
+                    
+                    # Jalankan container baru
+                    docker run -d --name $DevOPS-RKZ_container -p 8080:8080 $DOCKER_IMAGE
+                    '''
+                }
             }
         }
     }
