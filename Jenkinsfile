@@ -4,8 +4,8 @@ pipeline {
         cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
     }
     environment {
-        DOCKER_IMAGE = 'DevOPS-RKZ:latest' // Nama dan tag image Docker
-        CONTAINER_NAME = 'DevOPS-RKZ_container' // Nama container Docker
+        DOCKER_IMAGE = 'devops-rkz:latest' // Nama dan tag image Docker (huruf kecil)
+        CONTAINER_NAME = 'devops-rkz_container' // Nama container Docker (huruf kecil)
     }
     stages {
         stage('Checkout') {
@@ -38,9 +38,9 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    bat '''
-                    docker build -t %DOCKER_IMAGE% .
-                    '''
+                    bat """
+                    docker build -t ${env.DOCKER_IMAGE} .
+                    """
                 }
             }
         }
@@ -48,14 +48,11 @@ pipeline {
             steps {
                 echo 'Deploying Docker container...'
                 script {
-                    bat '''
-                    REM Hentikan container jika sudah ada
-                    docker stop %CONTAINER_NAME% || true
-                    docker rm %CONTAINER_NAME% || true
-                    
-                    REM Jalankan container baru
-                    docker run -d --name %CONTAINER_NAME% -p 8080:8080 %DOCKER_IMAGE%
-                    '''
+                    bat """
+                    docker stop ${env.CONTAINER_NAME} || true
+                    docker rm ${env.CONTAINER_NAME} || true
+                    docker run -d --name ${env.CONTAINER_NAME} -p 8080:8080 ${env.DOCKER_IMAGE}
+                    """
                 }
             }
         }
