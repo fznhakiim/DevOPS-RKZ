@@ -38,10 +38,10 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                withCredentials([string(credentialsId: 'DockerHubToken', variable: 'DOCKER_TOKEN')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         bat """
-                        echo ${DOCKER_TOKEN} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                        echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
                         docker tag ${DOCKER_IMAGE} ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
                         docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
                         """
@@ -55,7 +55,7 @@ pipeline {
                 bat """
                 docker stop ${CONTAINER_NAME} || true
                 docker rm ${CONTAINER_NAME} || true
-                docker run -d -p 8080:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+                docker run -d -p 8080:8080 --name ${CONTAINER_NAME} ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest
                 """
             }
         }
