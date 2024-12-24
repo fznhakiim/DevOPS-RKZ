@@ -12,8 +12,8 @@ pipeline {
                 echo 'Building the project...'
                 bat '''
                 echo Starting build process
-                REM Tambahkan perintah build sesuai dengan kebutuhan
-                echo Build selesai!
+                REM Ayo kita Build
+                echo Build udah selesai yaa!
                 '''
             }
         }
@@ -22,8 +22,8 @@ pipeline {
                 echo 'Running tests...'
                 bat '''
                 echo Starting test process
-                REM Tambahkan perintah untuk menjalankan pengujian
-                echo Semua tes selesai!
+                REM Ayo kita Testing
+                echo Semua tes udah selesai ya!
                 '''
             }
         }
