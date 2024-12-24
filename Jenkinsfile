@@ -14,7 +14,7 @@ pipeline {
             steps {
                 echo 'Checking out code from GitHub...'
                 // Menggunakan kredensial untuk GitHub
-                withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+                withCredentials([usernamePassword(credentialsId: 'DevOpsRKZ', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
                     git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
                 // Menggunakan kredensial untuk Docker Hub
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: '43ee9038-2454-4b33-81a4-39fee074e011', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     bat """
                     docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
                     docker tag ${env.DOCKER_IMAGE} ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.DOCKER_IMAGE}
