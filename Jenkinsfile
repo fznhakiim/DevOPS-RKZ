@@ -1,11 +1,14 @@
 pipeline {
     agent any
     triggers {
-        cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
+        // Menjadwalkan build setiap 15 menit
+        cron('H/15 * * * *') // Bisa disesuaikan jika Anda ingin menggunakan cron
+        // Untuk otomatis memicu build jika ada perubahan di GitHub, Anda dapat menggunakan webhook.
+        // Webhook di GitHub yang mengarah ke Jenkins untuk memicu build.
     }
     environment {
-        DOCKER_IMAGE = 'devops-rkz:latest' // Nama dan tag image Docker (huruf kecil)
-        CONTAINER_NAME = 'devops-rkz_container' // Nama container Docker (huruf kecil)
+        DOCKER_IMAGE = 'devops-rkz:latest' // Nama dan tag image Docker
+        CONTAINER_NAME = 'devops-rkz_container' // Nama container Docker
     }
     stages {
         stage('Checkout') {
