@@ -39,7 +39,7 @@ pipeline {
                 echo 'Building Docker image...'
                 script {
                     bat """
-                    docker build -t ${env.DOCKER_IMAGE} .
+                    docker build -t ${env.DOCKER_IMAGE} . 
                     """
                 }
             }
@@ -51,7 +51,7 @@ pipeline {
                     bat """
                     docker stop ${env.CONTAINER_NAME} || true
                     docker rm ${env.CONTAINER_NAME} || true
-                    docker run -d --name ${env.CONTAINER_NAME} -p 8080:8080 ${env.DOCKER_IMAGE}
+                    docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
                     """
                 }
             }
