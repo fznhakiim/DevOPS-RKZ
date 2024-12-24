@@ -1,11 +1,11 @@
-# Menggunakan base image Java
-FROM openjdk:11-jdk-slim
+# Menggunakan base image Nginx
+FROM nginx:latest
 
-# Menentukan direktori kerja di dalam container
-WORKDIR /app
+# Menyalin semua file website ke direktori default Nginx
+COPY . /usr/share/nginx/html
 
-# Menyalin file aplikasi ke dalam container
-COPY target/*.jar app.jar
+# Ekspose port 80 untuk diakses
+EXPOSE 80
 
-# Menentukan perintah untuk menjalankan aplikasi
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Jalankan Nginx
+CMD ["nginx", "-g", "daemon off;"]
