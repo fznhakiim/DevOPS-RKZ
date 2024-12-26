@@ -40,11 +40,6 @@ pipeline {
                     if (changes) {
                         echo "Changes detected in: ${changes}"
 
-                        // Cek apakah ada submodule yang tidak diinginkan
-                        bat '''
-                        git rm --cached DevOPS-RKZ
-                        '''
-
                         // Menambahkan file yang tidak terpelihara (untracked files) ke Git
                         bat '''
                         git add -A
@@ -54,6 +49,28 @@ pipeline {
                     } else {
                         echo "No changes detected. Skipping push to development."
                     }
+                }
+            }
+        }
+        stage('Merge to Master') {
+            steps {
+                script {
+                    echo 'Merging changes from development to master...'
+
+                    // Checkout master branch
+                    bat '''
+                    git checkout master
+                    '''
+
+                    // Merge development branch into master
+                    bat '''
+                    git merge development --no-ff -m "Merge changes from development to master"
+                    '''
+
+                    // Push changes to remote master
+                    bat '''
+                    git push origin master
+                    '''
                 }
             }
         }
@@ -80,7 +97,7 @@ pipeline {
                 echo 'Building Docker image...'
                 script {
                     bat """
-                    docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} .
+                    docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} . 
                     """
                 }
             }
