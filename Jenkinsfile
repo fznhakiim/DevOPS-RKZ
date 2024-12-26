@@ -39,8 +39,11 @@ pipeline {
 
                     if (changes) {
                         echo "Changes detected in: ${changes}"
+
+                        // Copy the files from master to the working directory for development branch
                         bat '''
                         git checkout master -- Jenkinsfile Dockerfile .dockerignore
+                        git checkout development
                         git add Jenkinsfile Dockerfile .dockerignore
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
                         git push origin development
@@ -99,11 +102,11 @@ pipeline {
     post {
         success {
             echo 'Pipeline finished successfully!'
-            emailext to: 'team@example.com', subject: 'Build Success', body: 'The pipeline has completed successfully.'
+            emailext to: 'kemal@gmail.com', subject: 'Build Success', body: 'The pipeline has completed successfully.'
         }
         failure {
             echo 'Pipeline failed. Check the logs for more details.'
-            emailext to: 'team@example.com', subject: 'Build Failure', body: 'The pipeline failed. Please check the Jenkins logs.'
+            emailext to: 'kemal@gmail.com', subject: 'Build Failure', body: 'The pipeline failed. Please check the Jenkins logs.'
         }
         always {
             echo 'Pipeline execution completed.'
