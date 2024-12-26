@@ -1,10 +1,7 @@
 pipeline {
     agent any
     triggers {
-        // Menjadwalkan build setiap 15 menit
-        cron('H/15 * * * *') // Bisa disesuaikan jika Anda ingin menggunakan cron
-        // Untuk otomatis memicu build jika ada perubahan di GitHub, Anda dapat menggunakan webhook.
-        // Webhook di GitHub yang mengarah ke Jenkins untuk memicu build.
+        cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
     }
     environment {
         DOCKER_IMAGE = 'devops-rkz:latest' // Nama dan tag image Docker
@@ -15,6 +12,36 @@ pipeline {
             steps {
                 echo 'Checking out code from GitHub...'
                 git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
+            }
+        }
+        stage('Check and Push to Development') {
+            steps {
+                script {
+                    echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
+                    
+                    // Fetch and checkout the development branch
+                    bat '''
+                    git fetch origin development
+                    git checkout development || git checkout -b development
+                    '''
+
+                    // Check if the files differ between branches
+                    def changes = sh(script: '''
+                    git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
+                    ''', returnStdout: true).trim()
+
+                    if (changes) {
+                        echo "Changes detected in: ${changes}"
+                        bat '''
+                        git checkout master -- Jenkinsfile Dockerfile .dockerignore
+                        git add Jenkinsfile Dockerfile .dockerignore
+                        git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
+                        git push origin development
+                        '''
+                    } else {
+                        echo "No changes detected. Skipping push to development."
+                    }
+                }
             }
         }
         stage('Build') {
