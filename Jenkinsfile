@@ -12,40 +12,31 @@ pipeline {
                     checkout([ 
                         $class: 'GitSCM',
                         branches: [[name: '*/development']],
-                        userRemoteConfigs: [[
-                            url: 'https://github.com/fznhakiim/DevOPS-RKZ.git',
-                            credentialsId: 'DevOpsRKZ'  // ID kredensial GitHub Anda
-                        ]]
+                        userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']]
                     ])
                 }
             }
         }
         stage('Check and Push Files') {
-    steps {
-        script {
-            echo 'Adding and pushing files Jenkinsfile, Dockerfile, and .dockerignore...'
+            steps {
+                script {
+                    echo 'Adding and pushing files Jenkinsfile, Dockerfile, and .dockerignore...'
 
-            // Ensure we are on the master branch
-            bat 'git fetch origin master'
-            bat 'git checkout master'
+                    // Ensure we are on the master branch
+                    bat 'git fetch origin master'
+                    bat 'git checkout master'
 
-            // Copy necessary files (Jenkinsfile, Dockerfile, .dockerignore) from development to master
-            bat 'git checkout development -- Jenkinsfile Dockerfile .dockerignore'
+                    // Copy necessary files (Jenkinsfile, Dockerfile, .dockerignore) from development to master
+                    bat 'git checkout development -- Jenkinsfile Dockerfile .dockerignore'
 
-            // Verify status of files
-            bat 'git status'
+                    // Create an empty commit if there are no changes
+                    bat 'git commit --allow-empty -m "Add Jenkinsfile, Dockerfile, and .dockerignore"'
 
-            // Add the files to staging
-            bat 'git add Jenkinsfile Dockerfile .dockerignore'
-
-            // Commit changes
-            bat 'git commit -m "Add Jenkinsfile, Dockerfile, and .dockerignore" || exit 0'
-
-            // Push changes to master
-            bat 'git push origin master || exit 1' // Pengecekan push
+                    // Push changes to master
+                    bat 'git push origin master'
+                }
+            }
         }
-    }
-}
         stage('Build') {
             steps {
                 echo 'Building the project...'
