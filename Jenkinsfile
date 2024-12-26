@@ -11,28 +11,35 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                git branch: 'master', url: 'https://github.com/fznhakiim/DevOPS-RKZ.git'
+                bat '''
+                git clone -b master https://github.com/fznhakiim/DevOPS-RKZ.git
+                cd DevOPS-RKZ
+                '''
             }
         }
         stage('Check and Push to Development') {
             steps {
                 script {
                     echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
-                    
+
                     // Fetch and checkout the development branch
                     bat '''
-                    git fetch origin development
+                    cd DevOPS-RKZ
+                    git fetch origin
                     git checkout development || git checkout -b development
                     '''
 
                     // Check if the files differ between branches
-                    def changes = sh(script: '''
+                    def changes = bat(script: '''
+                    cd DevOPS-RKZ
                     git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
+                    exit /b %ERRORLEVEL%
                     ''', returnStdout: true).trim()
 
                     if (changes) {
                         echo "Changes detected in: ${changes}"
                         bat '''
+                        cd DevOPS-RKZ
                         git checkout master -- Jenkinsfile Dockerfile .dockerignore
                         git add Jenkinsfile Dockerfile .dockerignore
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
@@ -69,7 +76,7 @@ pipeline {
                 echo 'Building Docker image...'
                 script {
                     bat """
-                    docker build -t ${env.DOCKER_IMAGE} . 
+                    docker build -t ${env.DOCKER_IMAGE} .
                     """
                 }
             }
@@ -79,8 +86,8 @@ pipeline {
                 echo 'Deploying Docker container...'
                 script {
                     bat """
-                    docker stop ${env.CONTAINER_NAME} || true
-                    docker rm ${env.CONTAINER_NAME} || true
+                    docker stop ${env.CONTAINER_NAME} || exit 0
+                    docker rm ${env.CONTAINER_NAME} || exit 0
                     docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
                     """
                 }
