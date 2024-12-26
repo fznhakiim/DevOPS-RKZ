@@ -37,7 +37,7 @@ pipeline {
             // Tambahkan dan commit file ke branch development
             bat '''
             git add Jenkinsfile Dockerfile .dockerignore
-            git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
+            git commit --allow-empty -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
             git push origin development
             '''
         }
