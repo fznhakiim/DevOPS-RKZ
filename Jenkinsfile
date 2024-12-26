@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script {
                     echo 'Checking out development branch...'
-                    checkout([
+                    checkout([ 
                         $class: 'GitSCM',
                         branches: [[name: '*/development']],
                         userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']]
@@ -17,35 +17,25 @@ pipeline {
                 }
             }
         }
-        stage('Check and Merge Changes') {
+        stage('Check and Push Files') {
             steps {
                 script {
-                    echo 'Checking and merging changes...'
+                    echo 'Adding and pushing files Jenkinsfile, Dockerfile, and .dockerignore...'
 
-                    // Fetch updates for branch development
-                    bat 'git fetch origin development'
-
-                    // Check if master branch exists in remote
-                    def masterExists = bat(
-                        script: 'git ls-remote --heads origin master',
-                        returnStatus: true
-                    ) == 0
-
-                    if (!masterExists) {
-                        echo "Master branch does not exist. Creating it..."
-                        bat '''
-                        git checkout development
-                        git checkout -b master
-                        git push origin master
-                        '''
-                    } else {
-                        echo "Master branch exists. Fetching it..."
-                        bat 'git fetch origin master'
-                    }
-
-                    // Check and merge changes
+                    // Ensure we are on the master branch
+                    bat 'git fetch origin master'
                     bat 'git checkout master'
-                    bat 'git merge development'
+
+                    // Copy necessary files (Jenkinsfile, Dockerfile, .dockerignore) from development to master
+                    bat 'git checkout development -- Jenkinsfile Dockerfile .dockerignore'
+
+                    // Add the files to staging
+                    bat 'git add Jenkinsfile Dockerfile .dockerignore'
+
+                    // Commit changes
+                    bat 'git commit -m "Add Jenkinsfile, Dockerfile, and .dockerignore"'
+
+                    // Push changes to master
                     bat 'git push origin master'
                 }
             }
