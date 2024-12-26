@@ -26,7 +26,7 @@ pipeline {
                     // Fetch and checkout the development branch
                     bat '''
                     git fetch origin
-                    git checkout development || git checkout -b development
+                    git checkout development
                     '''
 
                     // Check if the files differ between branches
@@ -40,10 +40,8 @@ pipeline {
                     if (changes) {
                         echo "Changes detected in: ${changes}"
 
-                        // Copy the files from master to the working directory for development branch
+                        // Menambahkan file yang tidak terpelihara (untracked files) ke Git
                         bat '''
-                        git checkout master -- Jenkinsfile Dockerfile .dockerignore
-                        git checkout development
                         git add Jenkinsfile Dockerfile .dockerignore
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
                         git push origin development
