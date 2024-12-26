@@ -1,19 +1,14 @@
 pipeline {
     agent any
-    triggers {
-        cron('H/15 * * * *') // Menjadwalkan build setiap 15 menit
-    }
     environment {
-        DOCKER_IMAGE = 'devops-rkz:latest' // Nama dan tag image Docker
-        CONTAINER_NAME = 'devops-rkz_container' // Nama container Docker
+        DOCKER_IMAGE = 'devops-rkz:latest'
+        CONTAINER_NAME = 'devops-rkz_container'
     }
     stages {
         stage('Checkout Development') {
             steps {
                 script {
                     echo 'Checking out development branch...'
-
-                    // Checkout ke branch development
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: '*/development']],
@@ -48,86 +43,48 @@ pipeline {
                         bat 'git fetch origin master'
                     }
 
-                    // Check differences between development and master
-                    def changes = bat(
-                        script: '''
-                        git diff --name-only origin/master origin/development -- Jenkinsfile Dockerfile .dockerignore
-                        ''',
-                        returnStdout: true
-                    ).trim()
-
-                    if (changes) {
-                        echo "Differences detected: ${changes}"
-
-                        // Checkout to master
-                        bat 'git checkout master'
-
-                        // Merge development into master
-                        bat 'git merge development'
-
-                        // Push merged changes to master
-                        bat 'git push origin master'
-                    } else {
-                        echo "No changes detected. Skipping merge."
-                        currentBuild.result = 'SUCCESS'
-                        return
-                    }
+                    // Check and merge changes
+                    bat 'git checkout master'
+                    bat 'git merge development'
+                    bat 'git push origin master'
                 }
             }
         }
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                bat '''
-                echo Starting build process
-                echo Build selesai!
-                '''
+                bat 'echo Build process completed.'
             }
         }
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                bat '''
-                echo Starting test process
-                echo Semua tes selesai!
-                '''
+                bat 'echo Test process completed.'
             }
         }
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                script {
-                    bat """
-                    docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} .
-                    """
-                }
+                bat 'docker build -t devops-rkz:latest .'
             }
         }
         stage('Deploy Docker Container') {
             steps {
                 echo 'Deploying Docker container...'
-                script {
-                    try {
-                        bat """
-                        docker stop ${env.CONTAINER_NAME} || exit 0
-                        docker rm ${env.CONTAINER_NAME} || exit 0
-                        docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
-                        """
-                    } catch (Exception e) {
-                        echo "Failed to deploy Docker container: ${e.message}"
-                    }
-                }
+                bat '''
+                docker stop devops-rkz_container || exit 0
+                docker rm devops-rkz_container || exit 0
+                docker run -d -p 8080:8080 --name devops-rkz_container devops-rkz:latest
+                '''
             }
         }
     }
     post {
         success {
             echo 'Pipeline finished successfully!'
-            emailext to: 'kemal@gmail.com', subject: 'Build Success', body: 'The pipeline has completed successfully.'
         }
         failure {
             echo 'Pipeline failed. Check the logs for more details.'
-            emailext to: 'kemal@gmail.com', subject: 'Build Failure', body: 'The pipeline failed. Please check the Jenkins logs.'
         }
         always {
             echo 'Pipeline execution completed.'
