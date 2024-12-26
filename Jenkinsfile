@@ -42,7 +42,7 @@ pipeline {
 
                         // Menambahkan file yang tidak terpelihara (untracked files) ke Git
                         bat '''
-                        git add Jenkinsfile Dockerfile .dockerignore
+                        git add -A
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
                         git push origin development
                         '''
