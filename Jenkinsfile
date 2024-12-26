@@ -8,68 +8,57 @@ pipeline {
         CONTAINER_NAME = 'devops-rkz_container' // Nama container Docker
     }
     stages {
-        stage('Checkout') {
+        stage('Checkout Development') {
             steps {
-                echo 'Checking out code from GitHub...'
-                checkout([ 
-                    $class: 'GitSCM', 
-                    branches: [[name: '*/master']], 
-                    userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']] 
+                echo 'Checking out development branch...'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/development']],
+                    userRemoteConfigs: [[url: 'https://github.com/InTroubleWh/DevOps-RKZ.git']]
                 ])
             }
         }
-        stage('Check and Push to Development') {
+        stage('Check and Merge Changes') {
             steps {
                 script {
-                    echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
+                    echo 'Checking and merging changes...'
 
-                    // Fetch dan checkout branch development
+                    // Fetch updates for both branches
                     bat '''
-                    git fetch origin
-                    git checkout development
+                    git fetch origin master
+                    git fetch origin development
                     '''
 
-                    // Periksa apakah ada perubahan pada file tertentu antara master dan development
+                    // Check if there are changes
                     def changes = bat(
                         script: '''
-                        git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
+                        git diff --name-only origin/master origin/development -- Jenkinsfile Dockerfile .dockerignore
                         ''',
                         returnStdout: true
                     ).trim()
 
                     if (changes) {
-                        echo "Changes detected in: ${changes}"
+                        echo "Differences detected: ${changes}"
 
-                        // Cek apakah ada submodule yang tidak diinginkan
+                        // Checkout to master
                         bat '''
-                        git rm --cached DevOPS-RKZ
+                        git checkout master
                         '''
 
-                        // Menambahkan file yang tidak terpelihara (untracked files) ke Git
+                        // Merge development into master
                         bat '''
-                        git add -A
-                        git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
-                        git push origin development
+                        git merge development
+                        '''
+
+                        // Push merged changes to master
+                        bat '''
+                        git push origin master
                         '''
                     } else {
-                        echo "No changes detected. Skipping push to development."
+                        echo "No changes detected. Skipping merge."
+                        currentBuild.result = 'SUCCESS'
+                        return
                     }
-                }
-            }
-        }
-        stage('Merge to Master') {
-            steps {
-                script {
-                    echo 'Merging changes from development to master...'
-
-                    // Checkout ke master terlebih dahulu
-                    bat 'git checkout master'
-
-                    // Merge perubahan dari development ke master
-                    bat 'git merge development'
-
-                    // Push perubahan ke remote master
-                    bat 'git push origin master'
                 }
             }
         }
