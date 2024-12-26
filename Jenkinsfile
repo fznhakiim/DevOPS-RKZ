@@ -12,7 +12,10 @@ pipeline {
                     checkout([ 
                         $class: 'GitSCM',
                         branches: [[name: '*/development']],
-                        userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']]
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/fznhakiim/DevOPS-RKZ.git',
+                            credentialsId: 'DevOpsRKZ'  // ID kredensial GitHub Anda
+                        ]]
                     ])
                 }
             }
@@ -36,7 +39,7 @@ pipeline {
                     bat 'git commit -m "Add Jenkinsfile, Dockerfile, and .dockerignore"'
 
                     // Push changes to master
-                    bat 'git push origin master'
+                    bat 'git push origin master || exit 1' // Menambahkan pengecekan jika push gagal
                 }
             }
         }
