@@ -10,12 +10,16 @@ pipeline {
     stages {
         stage('Checkout Development') {
             steps {
-                echo 'Checking out development branch...'
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/development']],
-                    userRemoteConfigs: [[url: 'https://github.com/InTroubleWh/DevOps-RKZ.git']]
-                ])
+                script {
+                    echo 'Checking out development branch...'
+
+                    // Checkout ke branch development
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/development']],
+                        userRemoteConfigs: [[url: 'https://github.com/InTroubleWh/DevOps-RKZ.git']]
+                    ])
+                }
             }
         }
         stage('Check and Merge Changes') {
@@ -23,13 +27,28 @@ pipeline {
                 script {
                     echo 'Checking and merging changes...'
 
-                    // Fetch updates for both branches
-                    bat '''
-                    git fetch origin master
-                    git fetch origin development
-                    '''
+                    // Fetch updates for branch development
+                    bat 'git fetch origin development'
 
-                    // Check if there are changes
+                    // Check if master branch exists in remote
+                    def masterExists = bat(
+                        script: 'git ls-remote --heads origin master',
+                        returnStatus: true
+                    ) == 0
+
+                    if (!masterExists) {
+                        echo "Master branch does not exist. Creating it..."
+                        bat '''
+                        git checkout development
+                        git checkout -b master
+                        git push origin master
+                        '''
+                    } else {
+                        echo "Master branch exists. Fetching it..."
+                        bat 'git fetch origin master'
+                    }
+
+                    // Check differences between development and master
                     def changes = bat(
                         script: '''
                         git diff --name-only origin/master origin/development -- Jenkinsfile Dockerfile .dockerignore
@@ -41,19 +60,13 @@ pipeline {
                         echo "Differences detected: ${changes}"
 
                         // Checkout to master
-                        bat '''
-                        git checkout master
-                        '''
+                        bat 'git checkout master'
 
                         // Merge development into master
-                        bat '''
-                        git merge development
-                        '''
+                        bat 'git merge development'
 
                         // Push merged changes to master
-                        bat '''
-                        git push origin master
-                        '''
+                        bat 'git push origin master'
                     } else {
                         echo "No changes detected. Skipping merge."
                         currentBuild.result = 'SUCCESS'
