@@ -23,13 +23,13 @@ pipeline {
                 script {
                     echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
 
-                    // Fetch and checkout the development branch
+                    // Fetch dan checkout branch development
                     bat '''
                     git fetch origin
                     git checkout development
                     '''
 
-                    // Periksa apakah file berubah antara master dan development
+                    // Periksa apakah ada perubahan pada file tertentu antara master dan development
                     def changes = bat(
                         script: '''
                         git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
@@ -39,6 +39,11 @@ pipeline {
 
                     if (changes) {
                         echo "Changes detected in: ${changes}"
+
+                        // Cek apakah ada submodule yang tidak diinginkan
+                        bat '''
+                        git rm --cached DevOPS-RKZ
+                        '''
 
                         // Menambahkan file yang tidak terpelihara (untracked files) ke Git
                         bat '''
@@ -57,20 +62,14 @@ pipeline {
                 script {
                     echo 'Merging changes from development to master...'
 
-                    // Checkout master branch
-                    bat '''
-                    git checkout master
-                    '''
+                    // Checkout ke master terlebih dahulu
+                    bat 'git checkout master'
 
-                    // Merge development branch into master
-                    bat '''
-                    git merge development --no-ff -m "Merge changes from development to master"
-                    '''
+                    // Merge perubahan dari development ke master
+                    bat 'git merge development'
 
-                    // Push changes to remote master
-                    bat '''
-                    git push origin master
-                    '''
+                    // Push perubahan ke remote master
+                    bat 'git push origin master'
                 }
             }
         }
@@ -97,7 +96,7 @@ pipeline {
                 echo 'Building Docker image...'
                 script {
                     bat """
-                    docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} . 
+                    docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} .
                     """
                 }
             }
