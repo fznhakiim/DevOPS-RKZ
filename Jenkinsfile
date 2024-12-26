@@ -23,13 +23,17 @@ pipeline {
                 script {
                     echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
 
-                    // Fetch and checkout the development branch
+                    // Fetch the latest changes from origin
                     bat '''
                     git fetch origin
+                    '''
+
+                    // Checkout the development branch
+                    bat '''
                     git checkout development
                     '''
 
-                    // Periksa apakah file berubah antara master dan development
+                    // Check for differences in the specified files between master and development
                     def changes = bat(
                         script: '''
                         git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
@@ -40,19 +44,22 @@ pipeline {
                     if (changes) {
                         echo "Changes detected in: ${changes}"
 
-                        // Cek apakah ada submodule yang tidak diinginkan
+                        // Add only the specified files to staging
                         bat '''
-                        git rm --cached DevOPS-RKZ
+                        git add Jenkinsfile Dockerfile .dockerignore
                         '''
 
-                        // Menambahkan file yang tidak terpelihara (untracked files) ke Git
+                        // Commit changes
                         bat '''
-                        git add -A
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
+                        '''
+
+                        // Push the changes to development
+                        bat '''
                         git push origin development
                         '''
                     } else {
-                        echo "No changes detected. Skipping push to development."
+                        echo "No changes detected in Jenkinsfile, Dockerfile, or .dockerignore. Skipping push to development."
                     }
                 }
             }
