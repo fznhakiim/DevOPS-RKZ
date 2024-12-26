@@ -11,10 +11,10 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/master']],
-                    userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']]
+                checkout([ 
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/master']], 
+                    userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']] 
                 ])
             }
         }
@@ -29,7 +29,7 @@ pipeline {
                     git checkout development
                     '''
 
-                    // Check if the files differ between branches
+                    // Periksa apakah file berubah antara master dan development
                     def changes = bat(
                         script: '''
                         git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
@@ -39,6 +39,11 @@ pipeline {
 
                     if (changes) {
                         echo "Changes detected in: ${changes}"
+
+                        // Cek apakah ada submodule yang tidak diinginkan
+                        bat '''
+                        git rm --cached DevOPS-RKZ
+                        '''
 
                         // Menambahkan file yang tidak terpelihara (untracked files) ke Git
                         bat '''
