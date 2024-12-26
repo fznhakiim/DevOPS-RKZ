@@ -18,14 +18,24 @@ pipeline {
                 ])
             }
         }
-       stage('Check and Push to Development') {
+     stage('Check and Push to Development') {
     steps {
         script {
-            echo "Pushing Jenkinsfile, Dockerfile, and .dockerignore to development branch..."
+            echo 'Pushing Jenkinsfile, Dockerfile, and .dockerignore to development branch...'
+
+            // Checkout ke branch development, jika tidak ada maka buat branch baru
             bat '''
+            git fetch origin
             git checkout development || git checkout -b development
-            git pull origin development
+            '''
+
+            // Checkout file tertentu dari branch master
+            bat '''
             git checkout master -- Jenkinsfile Dockerfile .dockerignore
+            '''
+
+            // Tambahkan dan commit file ke branch development
+            bat '''
             git add Jenkinsfile Dockerfile .dockerignore
             git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
             git push origin development
