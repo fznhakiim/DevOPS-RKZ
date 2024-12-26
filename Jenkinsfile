@@ -11,10 +11,11 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code from GitHub...'
-                bat '''
-                git clone -b master https://github.com/fznhakiim/DevOPS-RKZ.git
-                cd DevOPS-RKZ
-                '''
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']]
+                ])
             }
         }
         stage('Check and Push to Development') {
@@ -23,23 +24,22 @@ pipeline {
                     echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
 
                     // Fetch and checkout the development branch
-                    bat '''
-                    cd DevOPS-RKZ
+                    sh '''
                     git fetch origin
                     git checkout development || git checkout -b development
                     '''
 
                     // Check if the files differ between branches
-                    def changes = bat(script: '''
-                    cd DevOPS-RKZ
-                    git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
-                    exit /b %ERRORLEVEL%
-                    ''', returnStdout: true).trim()
+                    def changes = sh(
+                        script: '''
+                        git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
+                        ''',
+                        returnStdout: true
+                    ).trim()
 
                     if (changes) {
                         echo "Changes detected in: ${changes}"
-                        bat '''
-                        cd DevOPS-RKZ
+                        sh '''
                         git checkout master -- Jenkinsfile Dockerfile .dockerignore
                         git add Jenkinsfile Dockerfile .dockerignore
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
@@ -54,9 +54,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                bat '''
+                sh '''
                 echo Starting build process
-                REM Ayo kita Build
                 echo Build udah selesai yaa!
                 '''
             }
@@ -64,9 +63,8 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                bat '''
+                sh '''
                 echo Starting test process
-                REM Ayo kita Testing
                 echo Semua tes udah selesai ya!
                 '''
             }
@@ -75,8 +73,8 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    bat """
-                    docker build -t ${env.DOCKER_IMAGE} .
+                    sh """
+                    docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} .
                     """
                 }
             }
@@ -85,11 +83,15 @@ pipeline {
             steps {
                 echo 'Deploying Docker container...'
                 script {
-                    bat """
-                    docker stop ${env.CONTAINER_NAME} || exit 0
-                    docker rm ${env.CONTAINER_NAME} || exit 0
-                    docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
-                    """
+                    try {
+                        sh """
+                        docker stop ${env.CONTAINER_NAME} || true
+                        docker rm ${env.CONTAINER_NAME} || true
+                        docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
+                        """
+                    } catch (Exception e) {
+                        echo "Failed to deploy Docker container: ${e.message}"
+                    }
                 }
             }
         }
@@ -97,9 +99,11 @@ pipeline {
     post {
         success {
             echo 'Pipeline finished successfully!'
+            emailext to: 'team@example.com', subject: 'Build Success', body: 'The pipeline has completed successfully.'
         }
         failure {
             echo 'Pipeline failed. Check the logs for more details.'
+            emailext to: 'team@example.com', subject: 'Build Failure', body: 'The pipeline failed. Please check the Jenkins logs.'
         }
         always {
             echo 'Pipeline execution completed.'
