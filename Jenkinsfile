@@ -24,13 +24,13 @@ pipeline {
                     echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
 
                     // Fetch and checkout the development branch
-                    sh '''
+                    bat '''
                     git fetch origin
                     git checkout development || git checkout -b development
                     '''
 
                     // Check if the files differ between branches
-                    def changes = sh(
+                    def changes = bat(
                         script: '''
                         git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
                         ''',
@@ -39,7 +39,7 @@ pipeline {
 
                     if (changes) {
                         echo "Changes detected in: ${changes}"
-                        sh '''
+                        bat '''
                         git checkout master -- Jenkinsfile Dockerfile .dockerignore
                         git add Jenkinsfile Dockerfile .dockerignore
                         git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
@@ -54,18 +54,18 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                sh '''
+                bat '''
                 echo Starting build process
-                echo Build udah selesai yaa!
+                echo Build selesai!
                 '''
             }
         }
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh '''
+                bat '''
                 echo Starting test process
-                echo Semua tes udah selesai ya!
+                echo Semua tes selesai!
                 '''
             }
         }
@@ -73,7 +73,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    sh """
+                    bat """
                     docker build --pull --cache-from=${env.DOCKER_IMAGE} -t ${env.DOCKER_IMAGE} .
                     """
                 }
@@ -84,9 +84,9 @@ pipeline {
                 echo 'Deploying Docker container...'
                 script {
                     try {
-                        sh """
-                        docker stop ${env.CONTAINER_NAME} || true
-                        docker rm ${env.CONTAINER_NAME} || true
+                        bat """
+                        docker stop ${env.CONTAINER_NAME} || exit 0
+                        docker rm ${env.CONTAINER_NAME} || exit 0
                         docker run -d -p 8080:8080 --name ${env.CONTAINER_NAME} ${env.DOCKER_IMAGE}
                         """
                     } catch (Exception e) {
