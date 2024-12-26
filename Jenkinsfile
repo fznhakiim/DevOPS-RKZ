@@ -21,28 +21,31 @@ pipeline {
             }
         }
         stage('Check and Push Files') {
-            steps {
-                script {
-                    echo 'Adding and pushing files Jenkinsfile, Dockerfile, and .dockerignore...'
+    steps {
+        script {
+            echo 'Adding and pushing files Jenkinsfile, Dockerfile, and .dockerignore...'
 
-                    // Ensure we are on the master branch
-                    bat 'git fetch origin master'
-                    bat 'git checkout master'
+            // Ensure we are on the master branch
+            bat 'git fetch origin master'
+            bat 'git checkout master'
 
-                    // Copy necessary files (Jenkinsfile, Dockerfile, .dockerignore) from development to master
-                    bat 'git checkout development -- Jenkinsfile Dockerfile .dockerignore'
+            // Copy necessary files (Jenkinsfile, Dockerfile, .dockerignore) from development to master
+            bat 'git checkout development -- Jenkinsfile Dockerfile .dockerignore'
 
-                    // Add the files to staging
-                    bat 'git add Jenkinsfile Dockerfile .dockerignore'
+            // Verify status of files
+            bat 'git status'
 
-                    // Commit changes
-                    bat 'git commit -m "Add Jenkinsfile, Dockerfile, and .dockerignore"'
+            // Add the files to staging
+            bat 'git add Jenkinsfile Dockerfile .dockerignore'
 
-                    // Push changes to master
-                    bat 'git push origin master || exit 1' // Menambahkan pengecekan jika push gagal
-                }
-            }
+            // Commit changes
+            bat 'git commit -m "Add Jenkinsfile, Dockerfile, and .dockerignore" || exit 0'
+
+            // Push changes to master
+            bat 'git push origin master || exit 1' // Pengecekan push
         }
+    }
+}
         stage('Build') {
             steps {
                 echo 'Building the project...'
