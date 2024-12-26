@@ -18,52 +18,21 @@ pipeline {
                 ])
             }
         }
-        stage('Check and Push to Development') {
-            steps {
-                script {
-                    echo 'Checking for changes in Jenkinsfile, Dockerfile, and .dockerignore...'
-
-                    // Fetch the latest changes from origin
-                    bat '''
-                    git fetch origin
-                    '''
-
-                    // Checkout the development branch
-                    bat '''
-                    git checkout development
-                    '''
-
-                    // Check for differences in the specified files between master and development
-                    def changes = bat(
-                        script: '''
-                        git diff --name-only origin/master development -- Jenkinsfile Dockerfile .dockerignore
-                        ''',
-                        returnStdout: true
-                    ).trim()
-
-                    if (changes) {
-                        echo "Changes detected in: ${changes}"
-
-                        // Add only the specified files to staging
-                        bat '''
-                        git add Jenkinsfile Dockerfile .dockerignore
-                        '''
-
-                        // Commit changes
-                        bat '''
-                        git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
-                        '''
-
-                        // Push the changes to development
-                        bat '''
-                        git push origin development
-                        '''
-                    } else {
-                        echo "No changes detected in Jenkinsfile, Dockerfile, or .dockerignore. Skipping push to development."
-                    }
-                }
-            }
+       stage('Check and Push to Development') {
+    steps {
+        script {
+            echo "Pushing Jenkinsfile, Dockerfile, and .dockerignore to development branch..."
+            bat '''
+            git checkout development || git checkout -b development
+            git pull origin development
+            git checkout master -- Jenkinsfile Dockerfile .dockerignore
+            git add Jenkinsfile Dockerfile .dockerignore
+            git commit -m "Sync Jenkinsfile, Dockerfile, and .dockerignore from master to development"
+            git push origin development
+            '''
         }
+    }
+}
         stage('Build') {
             steps {
                 echo 'Building the project...'
