@@ -12,7 +12,10 @@ pipeline {
                     checkout([ 
                         $class: 'GitSCM',
                         branches: [[name: '*/development']],
-                        userRemoteConfigs: [[url: 'https://github.com/fznhakiim/DevOPS-RKZ.git']]
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/fznhakiim/DevOPS-RKZ.git',
+                            credentialsId: 'DevOpsRKZ'  // ID kredensial GitHub Anda
+                        ]]
                     ])
                 }
             }
@@ -29,11 +32,14 @@ pipeline {
                     // Copy necessary files (Jenkinsfile, Dockerfile, .dockerignore) from development to master
                     bat 'git checkout development -- Jenkinsfile Dockerfile .dockerignore'
 
-                    // Create an empty commit if there are no changes
+                    // Add the files to staging
+                    bat 'git add Jenkinsfile Dockerfile .dockerignore'
+
+                    // Commit changes
                     bat 'git commit --allow-empty -m "Add Jenkinsfile, Dockerfile, and .dockerignore"'
 
                     // Push changes to master
-                    bat 'git push origin master'
+                    bat 'git push origin master || exit 1' // Menambahkan pengecekan jika push gagal
                 }
             }
         }
